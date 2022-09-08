@@ -8,11 +8,11 @@ import "./Login.css";
 
 const Login = () => {
 
-    const [email, setEmail] = useState("");
+    const [userName, setEmail] = useState("");
     const [password, setPassword] = useState("");
   
     function validateForm() {
-      return email.length > 0 && password.length > 0;
+      return userName.length > 0 && password.length > 0;
     }
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -20,22 +20,22 @@ const Login = () => {
     const { user, isSuccess } = useSelector((state) => state.auth)
 
     function handleSubmit(event) {
-      //event.preventDefault();
-      console.log(email, password)
+      event.preventDefault();
+      console.log(userName, password)
       const userData = {
-        email,
+        userName,
         password,
       }
       dispatch(login(userData))
-      if (isSuccess){
-        navigate("/home")
-      }
+      // if (isSuccess){
+      //   navigate("/home")
+      // }
     }
     useEffect(() => {
       if(isSuccess){
         navigate("/home")
       }
-    }, [])
+    }, [isSuccess])
     
   return (
 
@@ -48,8 +48,8 @@ const Login = () => {
                 Username
             </Form.Label>
             <Form.Control
-                    type="email"
-                    value={email}
+                    type="text"
+                    value={userName}
                     onChange={(e) => setEmail(e.target.value)}
             />
             <Form.Label className='PasswordLabel'>

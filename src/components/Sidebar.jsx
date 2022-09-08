@@ -28,6 +28,11 @@ const Sidebar = () => {
             <NavLink to="/employee/skills" exact="true" className='text-dark  py-2 w-100 d-inline-block px-3' >Manage Skills</NavLink>
 
         </li>
+        <li>
+
+            <NavLink to="/employee/skills" exact="true" className='text-dark  py-2 w-100 d-inline-block px-3' >Manage Users</NavLink>
+
+        </li>        
     </ul>
     </div>
 

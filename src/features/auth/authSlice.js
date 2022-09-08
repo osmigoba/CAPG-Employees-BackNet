@@ -29,12 +29,6 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        reset: (state) => {
-            state.isLoading = false
-            state.isError = false
-            state.isSuccess = false
-            state.message = ''
-        },
         logout: (state) => {
             localStorage.removeItem('user') // deletes token from storage
             state.isLoading = false

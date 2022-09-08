@@ -32,28 +32,28 @@ const Home = () => {
     const response = await GetSkillsByEmployeeId(employeedata);
     return(response.result);
   }
-  const { user, isSuccess } = useSelector((state) => state.auth)
-  
+  const { user, isSuccess} = useSelector((state) => state.auth)
+  const { Token } = useSelector((state) => state.auth.user)
   useEffect ( () => {
 
-    getAllEmployees()
-    getAllSkills()
-    getAllExpertiseLevel()
+    getAllEmployees(Token)
+    getAllSkills(Token)
+    getAllExpertiseLevel(Token)
     console.log(user, isSuccess)
 
   }, [])
   
-  const getAllEmployees = async () => {
-    const response = await GetAllEmployees()
-    setEmployees(response.result)
+  const getAllEmployees = async (Token) => {
+    const response = await GetAllEmployees(Token)
+    setEmployees(response)
   }
-  const getAllSkills = async () => {
-    const response = await GetAllSkills()
-    setSkills(response.result)
+  const getAllSkills = async (Token) => {
+    const response = await GetAllSkills(Token)
+    setSkills(response)
   }
-  const getAllExpertiseLevel = async () => {
-    const response = await GetAllExpertiseLevel()
-    setExpertises(response.result)
+  const getAllExpertiseLevel = async (Token) => {
+    const response = await GetAllExpertiseLevel(Token)
+    setExpertises(response)
   }
   const handleChange = (event) =>{ 
     setSearch(event.target.value); 
@@ -62,7 +62,7 @@ const Home = () => {
 
   const filteredEmployees = 
     employees.filter(employee => 
-    employee.firstName.toLowerCase().includes(search.toLowerCase())
+    employee.Name.toLowerCase().includes(search.toLowerCase())
     )
 
     return (
@@ -79,7 +79,7 @@ const Home = () => {
                 <Label >Search by Expert Level</Label>
                 <Input type="select" name="select" id="SelectExpert">
                   { expertises.map( (expertise) =>(
-                     <option id={expertise.id}>{expertise.id}. {expertise.name}</option> 
+                     <option id={expertise.Order}>{expertise.Order}. {expertise.Name}</option> 
                   ))}
                 </Input>
               </FormGroup>             
@@ -88,9 +88,9 @@ const Home = () => {
           <Col>
             <FormGroup className='formgroup1'>
               <Label>Search by Skills</Label>
-              <Input type="select" name="selectMulti" id="SelectMul" multiple size={5}>
+              <Input className='inputSkills' type="select" name="selectMulti" id="SelectMul" multiple size={5}>
                 { skills.map( (skill) =>(
-                      <option id={skill.id}>{skill.id}. {skill.skill}</option> 
+                      <option id={skill.skillId}>{skill.skillId}. {skill.name}</option> 
                     ))}                
               </Input>
             </FormGroup>
@@ -122,12 +122,12 @@ const Home = () => {
                 </thead>
                 <tbody>
                   { filteredEmployees.map( (employee) =>(
-                      <tr key={employee.id}>
-                        <td> {employee.id}</td>
-                        <td> {employee.firstName + " "+employee.lastName} </td>
-                        <td> {employee.doj.slice(0, 9)} </td>
-                        <td> {employee.designation} </td>
-                        <td> {employee.email} </td>
+                      <tr key={employee.EmployeeId}>
+                        <td> {employee.EmployeeId}</td>
+                        <td> {employee.Name + " "+employee.LastName} </td>
+                        <td> {employee.JoiningDate.slice(0, 9)} </td>
+                        <td> {employee.Designation} </td>
+                        <td> {employee.Email} </td>
                         <td>
                         <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee) }>View Skills</Button> 
                         </td>

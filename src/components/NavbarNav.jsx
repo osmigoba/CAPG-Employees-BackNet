@@ -11,11 +11,12 @@ function NavBar() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { user, isSuccess } = useSelector((state) => state.auth)
+  
   const logOut = (e) => {
     e.preventDefault();
     console.log('click')
     dispatch(logout())
-    localStorage.removeItem('user')
+    localStorage.removeItem('token')
     navigate("/")
   }
   return (

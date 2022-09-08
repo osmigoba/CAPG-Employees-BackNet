@@ -1,14 +1,18 @@
 import axios from 'axios';
 //const apiEndpoint = '192.168.1.5:5261'
-const apiEndpoint = 'https://localhost:7261'
+// const apiEndpoint = 'https://localhost:7261'
+const apiEndpoint = 'http://localhost:4005'
 
-export async function GetAllEmployees() {
+export async function GetAllEmployees(Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Employee",
-            method: 'GET'
+            url: apiEndpoint + "/v1/api/employee",
+            method: 'GET',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            }
         });
         return response.data;
     } catch (e) {
@@ -16,13 +20,16 @@ export async function GetAllEmployees() {
     }
 }
 
-export async function GetAllSkills() {
+export async function GetAllSkills(Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Skill",
-            method: 'GET'
+            url: apiEndpoint + "/v1/api/skill",
+            method: 'GET',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            }            
         });
         return response.data;
     } catch (e) {
@@ -30,13 +37,16 @@ export async function GetAllSkills() {
     }
 }
 
-export async function GetAllExpertiseLevel() {
+export async function GetAllExpertiseLevel(Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/ExpertiseLevel",
-            method: 'GET'
+            url: apiEndpoint + "/v1/api/level",
+            method: 'GET',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            }            
         });
         return response.data;
     } catch (e) {
@@ -49,7 +59,7 @@ export async function GetSkillsByEmployeeId(employee) {
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Employee/skill/" + employee.id,
+            url: apiEndpoint + "/v1/api/employee-skills/" + employee.EmployeeId,
             method: 'GET'
         });
         return response.data;
@@ -191,15 +201,15 @@ export async function DeleteEmployeeSkill(skillId, employeeId) {
 }
 
 export async function Login(user) {
-
     const response = await axios({
-        url: apiEndpoint + `/api/Session/Login`,
+        // url: apiEndpoint + `/api/Session/Login`,
+        url: apiEndpoint + '/v1/auth/login',
         method: 'Post',
         data: user
     });
     if(response.data){
-        localStorage.setItem('user', JSON.stringify(response.data))
+        // localStorage.setItem('User', JSON.stringify(response.data.User))
+        localStorage.setItem('token', JSON.stringify(response.data.Token))
+        return response.data;
     }
-    
-    return response.data;
 }

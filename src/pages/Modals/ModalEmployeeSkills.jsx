@@ -1,36 +1,31 @@
-
-// import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import  { DeleteEmployeeSkill}  from '../../httpService.js';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
-//import { Table } from 'react-bootstrap/Table';
+import { useSelector } from 'react-redux'
+
 const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsToshow,employee}) => {
 
-  // useEffect ( () => {
-  //   console.log("paso por aqui useffect")
-  // }, [skillstoShow])
-
-
+  const { token } = useSelector((state) => state.auth.user)
   const closeModal = () => {
     setShowModal(false)
   }
 
-  const onHandleRemove = async (item) => {
+  const onHandleRemove = async (item, token) => {
 
     let responseConfirm = window.confirm("Do you really want to delete the skill?")
     if (!responseConfirm){
       return;
     }
-    const response = await DeleteEmployeeSkill(item.skillId, employee.id);
+    const response = await DeleteEmployeeSkill(item.skillID, employee.id, token);
 
     if (response.status !== 200){
       window.confirm("There was a problem deleting this skill")
       return;
     }
     let skills = [...skillstoShow]
-    skills = skills.filter(skill => skill.skillId !== item.skillId)
+    skills = skills.filter(skill => skill.skillID !== item.skillID)
     setSkillsToshow(skills)
     //closeModal();
     
@@ -55,7 +50,7 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
                 { skillstoShow.map( (item, index) =>(
                     <tr key={item.skillId}>
                       <td>
-                        <Button variant="danger" size="sm" onClick={() => onHandleRemove(item)}>Remove</Button> 
+                        <Button variant="danger" size="sm" onClick={() => onHandleRemove(item, token)}>Remove</Button> 
                       </td>
                       <td> {item.skill} </td>
                       <td> {item.level} </td>

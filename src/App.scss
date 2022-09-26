@@ -24,7 +24,8 @@ $gray: #e7e9eb;
 
 
 .sidebar {
-  width: calc(30vh - 10px);
+  // width: calc(30vh - 10px);
+  width: 15rem;
   resize: both;
   height: 100vh;
   border-right: 3px solid $gray;

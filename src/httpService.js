@@ -1,14 +1,14 @@
 import axios from 'axios';
-//const apiEndpoint = '192.168.1.5:5261'
+// const apiEndpoint = '192.168.1.4:4321'
 // const apiEndpoint = 'https://localhost:7261'
-const apiEndpoint = 'http://localhost:4005'
+const apiEndpoint = 'http://localhost:4321'
 
 export async function GetAllEmployees(Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/v1/api/employee",
+            url: apiEndpoint + "/api/employee",
             method: 'GET',
             headers:{
                 authorization: `Bearer ${Token}` 
@@ -25,7 +25,7 @@ export async function GetAllSkills(Token) {
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/v1/api/skill",
+            url: apiEndpoint + "/api/skill",
             method: 'GET',
             headers:{
                 authorization: `Bearer ${Token}` 
@@ -42,7 +42,7 @@ export async function GetAllExpertiseLevel(Token) {
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/v1/api/level",
+            url: apiEndpoint + "/api/expertise",
             method: 'GET',
             headers:{
                 authorization: `Bearer ${Token}` 
@@ -54,13 +54,16 @@ export async function GetAllExpertiseLevel(Token) {
     }
 }
 
-export async function GetSkillsByEmployeeId(employee) {
+export async function GetSkillsByEmployeeId(employee, Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/v1/api/employee-skills/" + employee.EmployeeId,
-            method: 'GET'
+            url: apiEndpoint + "/api/employee/skill/" + employee.id,
+            method: 'GET',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            }
         });
         return response.data;
     } catch (e) {
@@ -68,34 +71,15 @@ export async function GetSkillsByEmployeeId(employee) {
     }
 }
 
-export async function DeleteEmployee(employeeId) {
+export async function DeleteEmployee(employeeId, Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Employee/" + employeeId,
-            method: 'DELETE'
-        });
-        return response;
-    } catch (e) {
-        console.log(e);
-        return (e.response);
-    }
-}
-
-export async function AddEmployee(employee) {
-
-    try {
-
-        const response = await axios({
-            url: apiEndpoint + "/api/Employee/",
-            method: 'POST',
-            data: {
-                firstName: employee.firstName,
-                lastName: employee.lastName,
-                doj: employee.doj,
-                email: employee.email,
-                designation: employee.designation
+            url: apiEndpoint + "/api/employee/" + employeeId,
+            method: 'DELETE',
+            headers:{
+                authorization: `Bearer ${Token}` 
             }
         });
         return response;
@@ -105,18 +89,46 @@ export async function AddEmployee(employee) {
     }
 }
 
-export async function EditEmployee(employee) {
+export async function AddEmployee(employee, Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Employee",
+            url: apiEndpoint + "/api/employee",
+            method: 'POST',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            },
+            data: {
+                firstName: employee.firstName,
+                lastName: employee.lastName,
+                doj: employee.doj + "T00:00:00-05:00",
+                email: employee.email,
+                designation: employee.designation
+            }
+
+        });
+        return response;
+    } catch (e) {
+        console.log(e);
+        return (e.response);
+    }
+}
+
+export async function EditEmployee(employee,Token) {
+
+    try {
+
+        const response = await axios({
+            url: apiEndpoint + "/api/employee/" + employee.id,
             method: 'PUT',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            },
             data: {
-                id: employee.id,
                 firstName: employee.firstName,
                 lastName: employee.lastName,
-                doj: employee.doj,
+                doj: employee.doj + "T12:00:00-05:00",
                 email: employee.email,
                 designation: employee.designation
             }
@@ -128,13 +140,16 @@ export async function EditEmployee(employee) {
     }
 }
 
-export async function AddSkillToEmployee(skillAdd) {
+export async function AddSkillToEmployee(skillAdd, Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Employee/skill",
+            url: apiEndpoint + "/api/employee/skill",
             method: 'POST',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            },
             data: {
                 employeeID: skillAdd.employeeID,
                 skillID: skillAdd.skillID,
@@ -149,16 +164,18 @@ export async function AddSkillToEmployee(skillAdd) {
     }
 }
 
-export async function AddSkill(skill) {
+export async function AddSkill(skill, Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Skill",
+            url: apiEndpoint + "/api/skill",
             method: 'POST',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            },
             data: {
                 skill: skill
-
             }
         });
         return response;
@@ -169,13 +186,16 @@ export async function AddSkill(skill) {
 }
 
 
-export async function DeleteSkill(skillId) {
+export async function DeleteSkill(skillId, Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + "/api/Skill/" + skillId,
-            method: 'Delete'
+            url: apiEndpoint + "/api/skill/" + skillId,
+            method: 'Delete',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            },
         });
         return response;
     } catch (e) {
@@ -184,13 +204,16 @@ export async function DeleteSkill(skillId) {
     }
 }
 
-export async function DeleteEmployeeSkill(skillId, employeeId) {
+export async function DeleteEmployeeSkill(skillId, employeeId, Token) {
 
     try {
 
         const response = await axios({
-            url: apiEndpoint + `/api/Employee/${skillId}/${employeeId}`,
+            url: apiEndpoint + `/api/employee_skill/${skillId}/${employeeId}`,
             method: 'Delete',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            }
             
         });
         return response;
@@ -203,13 +226,13 @@ export async function DeleteEmployeeSkill(skillId, employeeId) {
 export async function Login(user) {
     const response = await axios({
         // url: apiEndpoint + `/api/Session/Login`,
-        url: apiEndpoint + '/v1/auth/login',
+        url: apiEndpoint + '/auth/login',
         method: 'Post',
         data: user
     });
     if(response.data){
         // localStorage.setItem('User', JSON.stringify(response.data.User))
-        localStorage.setItem('token', JSON.stringify(response.data.Token))
+        localStorage.setItem('token', JSON.stringify(response.data.token))
         return response.data;
     }
 }

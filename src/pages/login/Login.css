@@ -1,54 +1,48 @@
 
-    .Login {
-      border-radius: 8px;
-      margin-top: 5%;
-      margin-left: 32%;
-      height: 30hv;
-      font-weight: bold;
-      border:2px solid rgb(214, 209, 209);
-      width: 30vw;
-    }
-  
-    .Login form {
-      margin: 0 auto;
-      max-width: 320px;
-    }
-    .paddingButton {
-      margin: 15px 0;
-    }
-    .topForm {
-      background-color: rgb(231, 229, 225);
-      padding: 2%;
-      padding-left: 3%;
-      border-bottom: 2px solid rgb(214, 209, 209);
-      font-weight: bold;
+.Login {
+  border-radius: 8px;
+  margin-top: 5%;
+  margin-left: 20%;
 
-    }
+  height: 30hv;
+  font-weight: bold;
+  border:2px solid rgb(214, 209, 209);
+  width: 25rem;
+}
 
-    .formClass{
-      padding-top: 3%;
-      padding-left: 3%;
-      padding-right: 3%;
-      font-weight: bold;
-    }
+.paddingButton {
+  margin: 15px 0;
+}
+.topForm {
+  background-color: rgb(231, 229, 225);
+  border-bottom: 2px solid rgb(214, 209, 209);
+  font-weight: bold;
+}
 
-    .passwordClass {
-      padding-top: 3%;
-    }
+.formClass{
+  padding-top: 3%;
+  padding-left: 3%;
+  padding-right: 3%;
+  font-weight: bold;
+}
 
-    .Title {
-      padding-left: 5%;
-      padding-top: 2%;
-      background-color:rgb(231, 229, 225);
-      height: 15%;
-      border-bottom: 2px solid rgb(214, 209, 209);
-    }
+.passwordClass {
+  padding-top: 3%;
+}
 
-    .GroupClass {
-      padding-left: 5%;
-      padding-right: 5%;
-    }
+.Title {
+  padding-left: 5%;
+  padding-top: 2%;
+  background-color:rgb(231, 229, 225);
+  height: 15%;
+  border-bottom: 2px solid rgb(214, 209, 209);
+}
 
-    .PasswordLabel {
-      padding-top: 3%;
-    }
+.GroupClass {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.PasswordLabel {
+  padding-top: 3%;
+}

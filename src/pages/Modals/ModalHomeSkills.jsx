@@ -1,10 +1,10 @@
 
-// import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 
 import Table from 'react-bootstrap/Table';
-//import { Table } from 'react-bootstrap/Table';
+
 
 const ModalHomeSkills = ({showModal, setShowModal, skillstoShow}) => {
 
@@ -28,9 +28,9 @@ const closeModal = () => {
               </tr>
              </thead>
              <tbody>
-                { skillstoShow.map( (item, index) =>(
-                    <tr key={item.skillId}>
-                      <td> {item.skillId} </td>
+                { skillstoShow.map( (item) =>(
+                    <tr key={item.skillID}>
+                      <td> {item.skillID} </td>
                       <td> {item.skill} </td>
                       <td> {item.level} </td>
                       <td> {item.experience} </td>

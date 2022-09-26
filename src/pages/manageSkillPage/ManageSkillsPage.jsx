@@ -4,8 +4,10 @@ import  { GetAllSkills, AddSkill, DeleteSkill}  from '../../httpService.js';
 import { Container, Row, Col } from 'reactstrap';
 import { Button, FormGroup, Label, Input} from 'reactstrap';
 import { Table } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
+import { motion } from "framer-motion"
+
 const skillObject = {
   skill: ""
 }
@@ -15,19 +17,20 @@ const ManageSkillsPage = () => {
   const [skillData, setSkill] = useState(skillObject)
   const [ skills, setSkills ] = useState( [] )
   // The state from Redux
-  const { user, isSuccess } = useSelector((state) => state.auth)
-  const navigate = useNavigate()
+  const { isSuccess } = useSelector((state) => state.auth)
+  const token = JSON.parse(localStorage.getItem('token'))
+
   useEffect ( () => {
-    getAllSkills();
-    if (!isSuccess){
-      navigate("/") // Navigate to login  
+
+    if (isSuccess){
+      getAllSkills(token);
     }
-    getAllSkills();
+    
   }, [])
   
-  const getAllSkills = async () => {
-    const response = await GetAllSkills()
-    setSkills(response.result)
+  const getAllSkills = async (token) => {
+    const response = await GetAllSkills(token)
+    setSkills(response)
     return response
   }
 
@@ -39,7 +42,7 @@ const ManageSkillsPage = () => {
     })
 }
 
-const addSkill = async ( skillData) => {
+const addSkill = async ( skillData, token) => {
 
   if (skillData.skill.length === 0) {
     window.confirm("Enter a Skill")
@@ -56,68 +59,79 @@ const addSkill = async ( skillData) => {
     return;
   }
 
-  const response = await AddSkill(skillData.skill)
-  if (response.status === 200){
+  const response = await AddSkill(skillData.skill, token)
+  if (response.status === 201){
     window.confirm("The new Skill has been saved")
     setSkill([]);
-    getAllSkills();
+    getAllSkills(token);
   }
 }
 
-const onHandleDelete = async (item) => {
+const onHandleDelete = async (item, token) => {
   const res = window.confirm("Are you sure yo want to delete this Skill?")
   if (res){
-    const response = await DeleteSkill(item.id);
+    const response = await DeleteSkill(item.id, token);
+    console.log(response)
     if (response.status === 200){
-      getAllSkills();
+      getAllSkills(token);
     }
   }
-  console.log(res)
+
   console.log(item)
 }
 
   return (
-    <Container>
-      <Row>
-        <FormGroup className='group1'>
-          <Label className='addSkillLabel'>Add Skill</Label>
-          <Input name='skill' placeholder="Enter Skill" onChange={(e) => updateData(e)}/>
-        </FormGroup>        
-      </Row>
-      <Row>
-        <Col>
-          <FormGroup>
-            <Button color="primary" size="sm" onClick={() => addSkill(skillData)}>Add</Button>
-          </FormGroup>
-        </Col>        
-      </Row>
-      <Row>
-      <div>
-      <FormGroup>
-            <Table className='table table-striped' bordered size="sm">
-              <thead className='text-dark' bordered>
-                <tr>
-                  <th> # </th>
-                  <th>Skills</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                { skills.map( (item) =>(
-                  <tr key={item.id}>
-                    <td> { item.id } </td>
-                    <td> {item.skill}</td>
-                    <td>
-                      <Button color="danger" size="sm" onClick={() => onHandleDelete(item)}>Delete</Button>
-                    </td>
-                  </tr>
-                )) }
-              </tbody>
-            </Table>          
+    <motion.div
+        initial={{opacity: 0, x: 100 }}
+        animate={{opacity: 1, x: 0 }}
+        exit={{opacity: 0, x: -100 }}
+        transition={{duration: 0.7}}
+      
+      >{ isSuccess ? (
+        <Container>
+        <Row>
+          <FormGroup className='group1'>
+            <Label className='addSkillLabel'>Add Skill</Label>
+            <Input name='skill' placeholder="Enter Skill" onChange={(e) => updateData(e)}/>
           </FormGroup>        
-      </div>
-      </Row>
-    </Container>
+        </Row>
+        <Row>
+          <Col>
+            <FormGroup>
+              <Button color="primary" size="sm" onClick={() => addSkill(skillData, token)}>Add</Button>
+            </FormGroup>
+          </Col>        
+        </Row>
+        <Row>
+        <div>
+        <FormGroup>
+              <Table className='table table-striped' bordered size="sm">
+                <thead className='text-dark' bordered>
+                  <tr>
+                    <th> # </th>
+                    <th>Skills</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { skills.map( (item) =>(
+                    <tr key={item.id}>
+                      <td> { item.id } </td>
+                      <td> {item.skill}</td>
+                      <td>
+                        <Button color="danger" size="sm" onClick={() => onHandleDelete(item, token)}>Delete</Button>
+                      </td>
+                    </tr>
+                  )) }
+                </tbody>
+              </Table>          
+            </FormGroup>        
+        </div>
+        </Row>
+      </Container>
+      ) : (
+        <UnAuthorized/>
+    )}</motion.div>
   )
 }
 

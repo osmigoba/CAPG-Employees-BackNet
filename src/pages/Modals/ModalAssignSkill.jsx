@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
 import  { AddSkillToEmployee }  from '../../httpService.js';
-
+import { useSelector} from 'react-redux'
 
 let modelSkillAdd = {
 
@@ -14,17 +14,18 @@ let modelSkillAdd = {
 }
 
 const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, expertises, skills}) => {
-
+  const { token } = useSelector((state) => state.auth.user)
     const [skillAdd, setSkillAdd] = useState( modelSkillAdd )
 
-    // useEffect ( () => {
-    //   if (employee.length !== 0){
-    //     modelSkillAdd.employeeID = employee.id;
-    //     modelSkillAdd.skillID = skills[0].id;
-    //     modelSkillAdd.levelRatingId = expertises[0].id;
-    //     }
-    //   console.log('entre');
-    //   }, [])
+    useEffect ( () => {
+      if (employee.length !== 0){
+        modelSkillAdd.employeeID = 1;
+        modelSkillAdd.skillID = 1;
+        modelSkillAdd.levelRatingId = 1;
+        modelSkillAdd.experience = 1;
+        }
+      console.log('entre');
+      }, [])
 
           //To close the modal
     const handleClose = () => {
@@ -32,18 +33,20 @@ const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, 
     }
 
 
-      const saveSkill = async (employeeid) => {
+      const saveSkill = async (employeeid, token) => {
         skillAdd.employeeID = employeeid
+        console.log(skillAdd)
         if (skillAdd.skillID === 1) { 
           skillAdd.skillID = skills[0].id;
         }
         if (skillAdd.levelRatingId === 1){
           skillAdd.levelRatingId = expertises[0].id
         }
-        const response = await AddSkillToEmployee(skillAdd)
-        if (response.status === 200){
+        const response = await AddSkillToEmployee(skillAdd, token)
+        if (response.status === 201){
             window.confirm("The Skill has been saved")
-            setSkillAdd([]);
+            console.log(modelSkillAdd)
+            setSkillAdd(modelSkillAdd);
             handleClose();
           }
         
@@ -101,7 +104,7 @@ const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, 
 
     <Modal.Footer>
       {/* <Button variant="secondary" onClick={() => handleClose()}>Close</Button> */}
-      <Button variant="success" onClick={() => saveSkill(employee.id)}>Save</Button>
+      <Button variant="success" onClick={() => saveSkill(employee.id, token)}>Save</Button>
     </Modal.Footer>
   </Modal>
   )

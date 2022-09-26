@@ -7,9 +7,10 @@ import ModalEmployeeSkills from '../Modals/ModalEmployeeSkills.jsx';
 import ModalAddEmployee from '../Modals/ModalAddEmployee.jsx';
 import ModalAssignSkill from '../Modals/ModalAssignSkill.jsx';
 import ModalEditEmployee from '../Modals/ModalEditEmployee.jsx';
+import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import Table from 'react-bootstrap/Table';
-import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { motion } from "framer-motion"
 const ManageEmployeesPage = () => {
 
   //UseState to handle skills and expertises
@@ -26,29 +27,38 @@ const ManageEmployeesPage = () => {
   const [ employees, setEmployees ] = useState( [] )
   const [employeeWithskill, setEmployee] = useState([])
   // The state from Redux
-  const { user, isSuccess } = useSelector((state) => state.auth)
-  const navigate = useNavigate()
+  const { isSuccess } = useSelector((state) => state.auth)
+  const token = JSON.parse(localStorage.getItem('token'))
+
   useEffect ( () => {
-    if (!isSuccess){
-      navigate("/") // Navigate to login  
+    if (isSuccess){
+      getAllEmployees(token)
+      getAllSkills(token)
+      getAllExpertiseLevel(token)
     }
-    getAllEmployees()
-    getAllSkills()
-    getAllExpertiseLevel()
   }, [])
 
-  const getAllEmployees = async () => {
-    const response = await GetAllEmployees();
-    setEmployees(response.result);
-    console.log(response.result);
+  const getAllEmployees = async (token) => {
+    const response = await GetAllEmployees(token);
+    setEmployees(response);
+    console.log(response);
+  }
+  const getAllSkills = async (token) => {
+    const response = await GetAllSkills(token)
+    setSkills(response);
+    
+  }
+  const getAllExpertiseLevel = async (token) => {
+    const response = await GetAllExpertiseLevel(token)
+    setExpertises(response)
   }
 
-  const deleteEmployee = async (id) => {
+  const deleteEmployee = async (id, token) => {
     var responseConfirm = window.confirm("Do you really want to delete the Employee?")
     if(!responseConfirm){
       return;
     }
-    const response = await DeleteEmployee(id);
+    const response = await DeleteEmployee(id, token);
     if (response.status === 200){
       let data = employees.filter(data => data.id !== id)
       console.log(data)
@@ -56,27 +66,25 @@ const ManageEmployeesPage = () => {
       setEmployees(data)
     }
 }
-  const getAllSkills = async () => {
-    const response = await GetAllSkills()
-    setSkills(response.result);
-    
-  }
-  const getAllExpertiseLevel = async () => {
-    const response = await GetAllExpertiseLevel()
-    setExpertises(response.result)
-  }
 
-  const getSkillsByEmployeeId = async (employeedata) => {
-    const response = await GetSkillsByEmployeeId(employeedata);
-    return(response.result);
+
+
+  const getSkillsByEmployeeId = async (employeedata, token) => {
+    const response = await GetSkillsByEmployeeId(employeedata, token);
+    return(response);
   }
 
     //Functions to launchModals show skills
-  const sendDataEmployee = async (employeedata) => {
-    const response =  await getSkillsByEmployeeId(employeedata);
+  const sendDataEmployee = async (employeedata, token) => {
+    const response =  await getSkillsByEmployeeId(employeedata, token);
     console.log(response)
-    setEmployee(response)
-    setskillsbyemployee(response.skills)
+    if (response != null)
+    { 
+      setskillsbyemployee(response)
+    } else {
+      setskillsbyemployee([])
+    }
+    setEmployee(employeedata)
     setShowModalskills(true)
   }
 
@@ -99,8 +107,15 @@ const ManageEmployeesPage = () => {
     setEmployee(employeeData)
   }
 
-  return (
-    <Container>
+  return  (
+    <motion.div
+      initial={{opacity: 0, x: 100 }}
+      animate={{opacity: 1, x: 0 }}
+      exit={{opacity: 0, x: -100 }}
+      transition={{duration: 0.7}}
+    
+    >{ isSuccess ? (
+      <Container>
       <Row>
         <FormGroup>
           <Input className='AddEmployee' type="select" id="exampleSelect" onClick={ () => geDataToLaunchModal() }>
@@ -126,16 +141,16 @@ const ManageEmployeesPage = () => {
                 <tr key={employee.id}>
                   <td> {employee.id}</td>
                   <td> {employee.firstName + " "+employee.lastName} </td>
-                  <td> {employee.doj.slice(0, 9)} </td>
+                  <td> {employee.doj.slice(0, 10)} </td>
                   <td> {employee.designation} </td>
                   <td> {employee.email} </td>
                   <td>
 
                       {/* Pass Employee to modal */}
-                    <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee) }>View Skills</Button> {' '}
+                    <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee, token) }>View Skills</Button> {' '}
                     <Button color="warning" size="sm" onClick={ () => getDataToLaunchAddSkillModal(employee)}>Assign Skills</Button> {' '}
                     <Button color="success" size="sm" onClick={ () => getDataTolaunchModalEditEmployee(employee)}>Edit</Button>{' '}
-                    <Button color="danger" size="sm" onClick={ () => deleteEmployee(employee.id) }>Delete</Button>
+                    <Button color="danger" size="sm" onClick={ () => deleteEmployee(employee.id, token) }>Delete</Button>
                   </td>
                 </tr>
               )) }
@@ -169,7 +184,9 @@ const ManageEmployeesPage = () => {
        getAllEmployees = {getAllEmployees}
        />
     </Container>
-      
+    ) : (
+      <UnAuthorized/>
+    )}</motion.div>
   )
 }
 

@@ -1,8 +1,16 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { motion } from "framer-motion"
 const Sidebar = () => {
+  const { isSuccess } = useSelector((state) => state.auth)
   return (
-    <div className="sidebar bg-light">
+    <motion.div 
+      initial={{opacity: 0, x: 100 }}
+      animate={{opacity: 1, x: 0 }}
+      exit={{opacity: 0, x: -100 }}
+      transition={{duration: 0.7}}
+      className="sidebar bg-light">
     <ul>
         <li>
             <center>
@@ -28,13 +36,8 @@ const Sidebar = () => {
             <NavLink to="/employee/skills" exact="true" className='text-dark  py-2 w-100 d-inline-block px-3' >Manage Skills</NavLink>
 
         </li>
-        <li>
-
-            <NavLink to="/employee/skills" exact="true" className='text-dark  py-2 w-100 d-inline-block px-3' >Manage Users</NavLink>
-
-        </li>        
     </ul>
-    </div>
+    </motion.div>
 
   )
 }

@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
 import  { AddEmployee }  from '../../httpService.js';
-
+import { useSelector } from 'react-redux'
 const modelEmployee = {
 
     firstName: "",
@@ -14,7 +14,7 @@ const modelEmployee = {
 }
 
 const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee, getAllEmployees}) => {
-
+  const { token } = useSelector((state) => state.auth.user)
     const [employee, setEmployee] =  useState(modelEmployee);
 
     const updateData = (e) => {
@@ -25,13 +25,13 @@ const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee, getAll
         })
     }  
     
-    const addEmployee = async (employee) => {
-        const response = await AddEmployee(employee)
+    const addEmployee = async (employee, token) => {
+        const response = await AddEmployee(employee, token)
 
-        if (response.status === 200){
+        if (response.status === 201){
           window.confirm("The Employee has been saved")
           setEmployee([]);
-          getAllEmployees();
+          getAllEmployees(token);
           handleClose();  
         }
     }
@@ -74,7 +74,7 @@ const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee, getAll
     
           <Modal.Footer>
 
-            <Button variant="success" onClick={() => addEmployee(employee)}>Save changes</Button>
+            <Button variant="success" onClick={() => addEmployee(employee, token)}>Save changes</Button>
           </Modal.Footer>
         </Modal>
       );

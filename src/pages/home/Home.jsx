@@ -8,7 +8,8 @@ import Form from 'react-bootstrap/Form';
 import ModalHomeSkills from '../Modals/ModalHomeSkills.jsx';
 import ModalSearchEmployees from '../Modals/ModalSearchEmployeesBySkill.jsx';
 import ModalSearchEmployeesExpert from '../Modals/ModalSearchEmployeesByExpertise.jsx';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { getEmployeesRedux } from '../../features/employees/employeesSlice'
 import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import { motion } from "framer-motion"
 import Swal from 'sweetalert2'
@@ -28,7 +29,7 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false)
   const [showModalSearchEmployees, setshowModalSearchEmployees] = useState(false)
   const [showModalSearchEmployeesExpert, setShowModalSearchEmployeesExpert] = useState(false)
-  const [ employees, setEmployees ] = useState( [] )
+  // const [ employees, setEmployees ] = useState( [] )
   const [ skills, setSkills ] = useState( [] )
   const [skillToShow, setSkillToShow] = useState('')
   const [ expertises, setExpertises ] = useState( [] )
@@ -58,24 +59,33 @@ const Home = () => {
     console.log(response)
     return response
   }
+
+  //////////////////////////////////////////////////////////////
+  ///////////////////  REDUX TOOLKIT //////////////////////////
   const { user, isSuccess} = useSelector((state) => state.auth)
+  const employeesState  = useSelector((state) => state.employeesState)
+  console.log("EmployeeList in the state", employeesState)
+  const  {employees}  = employeesState;
+  console.log("EmployeeList afetr passing the state", employees)
+
+  console.log("state of the statusgetemployees", employeesState.getEmployeesStatus)
+  const dispatch = useDispatch()
   const token = JSON.parse(localStorage.getItem('token'))
 
   useEffect ( () => {
     if (isSuccess){
-      getAllEmployees(token)
+      // getAllEmployees(token)
+      dispatch(getEmployeesRedux(token))
       getAllSkills(token)
       getAllExpertiseLevel(token)
       console.log(user, isSuccess)
     }
-
-
   }, [])
   
-  const getAllEmployees = async (token) => {
-    const response = await GetAllEmployees(token)
-    setEmployees(response)
-  }
+  // const getAllEmployees = async (token) => {
+  //   const response = await GetAllEmployees(token)
+  //   setEmployees(response)
+  // }
   const getAllSkills = async (token) => {
     const response = await GetAllSkills(token)
     setSkills(response)
@@ -124,11 +134,14 @@ const Home = () => {
 
   }
 
-  const filteredEmployees = 
-    employees.filter(employee => 
-    employee.firstName.toLowerCase().includes(search.toLowerCase())
-    )
+  // const filteredEmployees = 
+  //   employees.filter(employee => 
+  //   employee.firstName.toLowerCase().includes(search.toLowerCase())
+  //   )
+  const handleSearchButton = async(token)=> {
+    dispatch(getEmployeesRedux(token))
 
+  }
     return (
       <motion.div
         initial={{opacity: 0, x: 100 }}
@@ -165,7 +178,7 @@ const Home = () => {
           </Row>
           <Row>
             <Col sm={{ size: 'auto', offset: 0 }}>
-              <Button color="warning" size="sm"> Search Employees </Button>  
+              <Button color="warning" size="sm" onClick={() => handleSearchButton(token) }> Search Employees </Button>  
             </Col>
                     
           </Row>
@@ -188,18 +201,19 @@ const Home = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    { filteredEmployees.map( (employee) =>(
-                        <tr key={employee.id}>
-                          <td> {employee.id}</td>
-                          <td> {employee.firstName + " "+employee.lastName} </td>
-                          <td> {employee.doj.slice(0, 10)} </td>
-                          <td> {employee.designation} </td>
-                          <td> {employee.email} </td>
-                          <td>
-                          <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee) }>View Skills</Button> 
-                          </td>
-                        </tr>
-                    )) }
+
+                    { employees.map( (employee) =>(
+                      <tr key={employee.id}>
+                        <td> {employee.id}</td>
+                        <td> {employee.firstName + " "+employee.lastName} </td>
+                        <td> {employee.doj.slice(0, 10)} </td>
+                        <td> {employee.designation} </td>
+                        <td> {employee.email} </td>
+                        <td>
+                        <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee) }>View Skills</Button> 
+                        </td>
+                      </tr>
+                      )) }
                   </tbody>
                 </Table>
             </FormGroup>

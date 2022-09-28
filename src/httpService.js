@@ -19,7 +19,16 @@ export async function GetAllEmployees(Token) {
         console.log(e);
     }
 }
-
+export async function GetAllEmployeesRedux(Token) {
+    const response = await axios({
+        url: apiEndpoint + "/api/employee",
+        method: 'GET',
+        headers:{
+            authorization: `Bearer ${Token}` 
+        }
+    });
+    return response.data;
+}
 export async function GetAllSkills(Token) {
 
     try {

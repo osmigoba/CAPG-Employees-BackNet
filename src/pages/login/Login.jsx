@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { Form, Button, FormGroup } from "react-bootstrap"
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { login, reset } from '../../features/auth/authSlice'
+import { login } from '../../features/auth/authSlice'
 import "./Login.css";
 import { motion } from "framer-motion"
 import Swal from 'sweetalert2'

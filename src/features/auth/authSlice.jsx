@@ -1,7 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 import { Login } from '../../httpService'
 import Swal from 'sweetalert2'
-import CapLogo from '../../Capgemini-logo.jpg'
 //Get user from LocalStorage
 const user = JSON.parse(localStorage.getItem('user'))
 

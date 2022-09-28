@@ -1,42 +1,50 @@
 import React, {useEffect, useState} from 'react';
-import { Form, Button } from "react-bootstrap"
-import { Container, FormGroup, Row} from 'reactstrap';
+import { Form, Button, FormGroup } from "react-bootstrap"
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { login, reset } from '../../features/auth/authSlice'
 import "./Login.css";
 import { motion } from "framer-motion"
-
+import Swal from 'sweetalert2'
 const Login = () => {
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
   
-    function validateForm() {
-      return email.length > 0 && password.length > 0;
-    }
     const navigate = useNavigate()
     const dispatch = useDispatch()
     // Get the state from redux
-    const { user, isSuccess } = useSelector((state) => state.auth)
+    const { isSuccess } = useSelector((state) => state.auth)
 
-    function handleSubmit(event) {
+    const handleSubmit = async (event) => {
       event.preventDefault();
-      console.log(email, password)
+      if (email.length <= 10 || password.length <= 2){
+        await Toast.fire({
+          title: `🙄 Please enter a valid email and Password`,
+          icon: 'error',
+          timer: 1500,
+          position: "top-end"
+        })
+        return
+      }
       const userData = {
         email,
         password,
       }
-      dispatch(login(userData))
-      // if (isSuccess){
-      //   navigate("/home")
-      // }
+      await dispatch(login(userData))
+
     }
     useEffect(() => {
       if(isSuccess){
+        console.log("redirigí a home")
         navigate("/home")
       }
-    }, [isSuccess])
+    }, [isSuccess, navigate])
     
   return (
     <motion.div 

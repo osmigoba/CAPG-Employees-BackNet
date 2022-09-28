@@ -1,8 +1,5 @@
-
-
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-
 import Table from 'react-bootstrap/Table';
 
 
@@ -15,7 +12,7 @@ const closeModal = () => {
   return (
     
     <Modal show={showModal} onHide={closeModal}>
-      <Modal.Header closeButton>View Skills</Modal.Header>
+      <Modal.Header closeButton><b>View Skills</b></Modal.Header>
         <Modal.Body>
           <Table className='table table-striped' bordered>
             <thead className='text-dark'>

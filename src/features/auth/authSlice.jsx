@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 import { Login } from '../../httpService'
-
+import Swal from 'sweetalert2'
+import CapLogo from '../../Capgemini-logo.jpg'
 //Get user from LocalStorage
 const user = JSON.parse(localStorage.getItem('user'))
 
@@ -11,14 +12,30 @@ const initialState = {
     isLoading: false,
     message: ''
 }
-
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
 //lOGIN 
 export const login = createAsyncThunk('auth/login', async(user, ThunkAPI) => {
     try {
-        return await Login(user)
-         
+        const data =  await Login(user)   
+          await Toast.fire({
+            icon: 'success',
+            title: '😎 Login successful',
+            timer: 1500
+          })
+        return data
     } catch (error) {
         const message = error.toString()
+
+        await Toast.fire({
+            icon: 'error',
+            title: '🤨 Unauthorized, Please the check email or password',
+            timer: 2500
+          })
         return ThunkAPI.rejectWithValue(message)
     }
 })

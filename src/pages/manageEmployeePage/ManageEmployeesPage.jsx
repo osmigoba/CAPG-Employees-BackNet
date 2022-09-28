@@ -11,8 +11,14 @@ import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import Table from 'react-bootstrap/Table';
 import { useSelector } from 'react-redux'
 import { motion } from "framer-motion"
+import Swal from 'sweetalert2'
 const ManageEmployeesPage = () => {
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
   //UseState to handle skills and expertises
   const [ skills, setSkills ] = useState( [] )
   const [ expertises, setExpertises ] = useState( [] )
@@ -53,18 +59,33 @@ const ManageEmployeesPage = () => {
     setExpertises(response)
   }
 
-  const deleteEmployee = async (id, token) => {
-    var responseConfirm = window.confirm("Do you really want to delete the Employee?")
-    if(!responseConfirm){
-      return;
-    }
-    const response = await DeleteEmployee(id, token);
-    if (response.status === 200){
-      let data = employees.filter(data => data.id !== id)
-      console.log(data)
-      //getAllEmployees();
-      setEmployees(data)
-    }
+  const deleteEmployee = async (employee, token) => {
+   
+    // let res = false;
+    await Swal.fire({
+      text: `Are you sure you want to delete the employee:  ${employee.firstName + " "+employee.lastName}?`,
+      icon: 'question',
+      confirmButtonColor: "#D32F2F",
+      showCancelButton: true,
+      showCloseButton: true,
+      position: "top"
+    }).then(async res => {
+      if (res.isConfirmed){
+        const response = await DeleteEmployee(employee.id, token);
+        if (response.status === 200){
+          await Toast.fire({
+            title: `Employee ${employee.firstName + " "+employee.lastName}`,
+            icon: 'success',
+            timer: 1500,
+            position: "top"
+          })
+          let data = employees.filter(data => data.id !== employee.id)
+          console.log(data)
+          setEmployees(data)
+        }
+      }
+    })
+
 }
 
 
@@ -150,7 +171,7 @@ const ManageEmployeesPage = () => {
                     <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee, token) }>View Skills</Button> {' '}
                     <Button color="warning" size="sm" onClick={ () => getDataToLaunchAddSkillModal(employee)}>Assign Skills</Button> {' '}
                     <Button color="success" size="sm" onClick={ () => getDataTolaunchModalEditEmployee(employee)}>Edit</Button>{' '}
-                    <Button color="danger" size="sm" onClick={ () => deleteEmployee(employee.id, token) }>Delete</Button>
+                    <Button color="danger" size="sm" onClick={ () => deleteEmployee(employee, token) }>Delete</Button>
                   </td>
                 </tr>
               )) }
@@ -183,6 +204,7 @@ const ManageEmployeesPage = () => {
        employeeWithSkills	 = {employeeWithskill}
        getAllEmployees = {getAllEmployees}
        />
+       
     </Container>
     ) : (
       <UnAuthorized/>

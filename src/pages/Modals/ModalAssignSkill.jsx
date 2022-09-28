@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
 import  { AddSkillToEmployee }  from '../../httpService.js';
 import { useSelector} from 'react-redux'
-
+import Swal from 'sweetalert2'
 let modelSkillAdd = {
 
     skillID: 1,
@@ -16,7 +16,12 @@ let modelSkillAdd = {
 const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, expertises, skills}) => {
   const { token } = useSelector((state) => state.auth.user)
     const [skillAdd, setSkillAdd] = useState( modelSkillAdd )
-
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timerProgressBar: true,
+    })
     useEffect ( () => {
       if (employee.length !== 0){
         modelSkillAdd.employeeID = 1;
@@ -44,14 +49,25 @@ const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, 
         }
         const response = await AddSkillToEmployee(skillAdd, token)
         if (response.status === 201){
-            window.confirm("The Skill has been saved")
+          
+            await Toast.fire({
+              title: `The skill has been assigned`,
+              icon: 'success',
+              timer: 2000,
+              position: "top"
+            })
             console.log(modelSkillAdd)
             setSkillAdd(modelSkillAdd);
             handleClose();
           }
         
         if (response.status === 400){
-          window.confirm(`This Skill already exists`)
+          await Toast.fire({
+            title: `🤨 This skill already exists`,
+            icon: 'error',
+            timer: 1500,
+            position: "top"
+          })
         }
       }
 

@@ -1,24 +1,41 @@
 import React, {useEffect, useState} from 'react';
 import './Home.scss'
-import  { GetAllEmployees, GetAllSkills, GetAllExpertiseLevel, GetSkillsByEmployeeId}  from '../../httpService.js';
+import  { GetAllEmployees, GetAllSkills, GetAllExpertiseLevel, GetSkillsByEmployeeId, GetEmployeesBySkillId, GetEmployeesByLevelId}  from '../../httpService.js';
 import { Container, Row, Col } from 'reactstrap';
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, FormGroup, Label } from 'reactstrap';
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
 import ModalHomeSkills from '../Modals/ModalHomeSkills.jsx';
-import Loading from '../loading/Loading.js';
+import ModalSearchEmployees from '../Modals/ModalSearchEmployeesBySkill.jsx';
+import ModalSearchEmployeesExpert from '../Modals/ModalSearchEmployeesByExpertise.jsx';
 import { useSelector } from 'react-redux'
 import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import { motion } from "framer-motion"
+import Swal from 'sweetalert2'
+
+const dataToSearch = {
+  skillId: 0,
+  LevelId: 0
+}
+
 const Home = () => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
   const [showModal, setShowModal] = useState(false)
+  const [showModalSearchEmployees, setshowModalSearchEmployees] = useState(false)
+  const [showModalSearchEmployeesExpert, setShowModalSearchEmployeesExpert] = useState(false)
   const [ employees, setEmployees ] = useState( [] )
-  const [ filtersemployees, setFilterEmployees ] = useState( [] )
   const [ skills, setSkills ] = useState( [] )
+  const [skillToShow, setSkillToShow] = useState('')
   const [ expertises, setExpertises ] = useState( [] )
-  const [loading, setLoading] = useState(false);
   const [skillsbyemployee, setskillsbyemployee] = useState([])
   const [employeeWithskill, setEmployee] = useState([])
-
+  const [employeesSearch, setemployeesSearch] = useState([])
+  const [employeesSearchSkillLevel, setemployeesSearchSkillLevel] = useState(dataToSearch)
   // For every search
   const [search, setSearch] = useState('');
 
@@ -69,6 +86,41 @@ const Home = () => {
   }
   const handleChange = (event) =>{ 
     setSearch(event.target.value); 
+  }
+
+  const onHandleSelectSkill  = async (skill, token) => {
+    setemployeesSearchSkillLevel({...employeesSearchSkillLevel, ["skillId"]: skill.id})
+    console.log(employeesSearchSkillLevel)
+    const res = await GetEmployeesBySkillId(skill.id, token)
+    if (res != null){
+      setemployeesSearch(res)
+      setshowModalSearchEmployees(true)
+      setSkillToShow(skill.skill)
+    } else {
+      await Toast.fire({
+        title: `🤨 This skill does not have employees assigned`,
+        icon: 'error',
+        timer: 1500,
+        position: "top"
+      })
+    } 
+  }
+  const handleSelectLevel = async (event, token) => {
+    const value = event.target.value
+    console.log(value)
+    const res = await GetEmployeesByLevelId(value, token)
+    if (res != null){
+      setemployeesSearch(res)
+      setShowModalSearchEmployeesExpert(true)
+      //setSkillToShow(skill)
+    } else {
+      await Toast.fire({
+        title: `🤨 This Expertise Level has not been assigned`,
+        icon: 'error',
+        timer: 1500,
+        position: "top"
+      })
+    } 
 
   }
 
@@ -85,32 +137,29 @@ const Home = () => {
         transition={{duration: 0.7}}
       >{ isSuccess ? (
           <Container>
-          {loading && <Loading />}
           <Row>
             <Col>
-
-                <FormGroup className='formgroup1'>
-                  <Label >Search by Name</Label>
-                  <Input  id="Email" placeholder="Search Employees" onChange={(event) => handleChange(event)}/>
-                </FormGroup>
-                <FormGroup>
-                  <Label >Search by Expert Level</Label>
-                  <Input type="select" name="select" id="SelectExpert">
-                    { expertises.map( (expertise) =>(
-                      <option id={expertise.id}>{expertise.id}. {expertise.name}</option> 
-                    ))}
-                  </Input>
-                </FormGroup>             
-
+              <FormGroup className='formgroup1'>
+                <Label >Search by Name</Label>
+                <Form.Control  id="Email" placeholder="Search Employees" onChange={(event) => handleChange(event)}/>
+              </FormGroup>
+              <FormGroup>
+                <Label >Search by Expert Level</Label>
+                <Form.Select type="select" name="select" onChange={(e) => handleSelectLevel(e, token)}>
+                  { expertises.map( (expertise) =>(
+                    <option value={expertise.id} onChange={() => handleSelectLevel(expertise, token)}>{expertise.id}. {expertise.name}</option> 
+                  ))}
+                </Form.Select>
+              </FormGroup>             
             </Col>
             <Col>
               <FormGroup className='formgroup1'>
                 <Label>Search by Skills</Label>
-                <Input className='inputSkills' type="select" name="selectMulti" id="SelectMul" multiple size={5}>
+                <Form.Select className='inputSkills' type="select" name="selectMulti" id="SelectMul" multiple size={5}>
                   { skills.map( (skill) =>(
-                        <option id={skill.id}>{skill.id}. {skill.skill}</option> 
+                        <option value={skill.id} onClick={() => onHandleSelectSkill(skill, token)}>{skill.id}. {skill.skill}</option> 
                       ))}                
-                </Input>
+                </Form.Select>
               </FormGroup>
             </Col>
           </Row>
@@ -154,13 +203,22 @@ const Home = () => {
                   </tbody>
                 </Table>
             </FormGroup>
-  
           </Row>
-
           <ModalHomeSkills 
             showModal = {showModal} 
             setShowModal = {setShowModal}
             skillstoShow = {skillsbyemployee}
+          />
+          <ModalSearchEmployees
+            showModal = {showModalSearchEmployees}
+            setShowModal = {setshowModalSearchEmployees}
+            employees = {employeesSearch}
+            skill = {skillToShow}
+          />
+          <ModalSearchEmployeesExpert
+            showModal = {showModalSearchEmployeesExpert}
+            setShowModal = {setShowModalSearchEmployeesExpert}
+            employees = {employeesSearch}
           />
         </Container>
       ) : (

@@ -236,3 +236,38 @@ export async function Login(user) {
         return response.data;
     }
 }
+
+export async function GetEmployeesBySkillId(skillId, Token) {
+    try {
+        const response = await axios({
+            url: apiEndpoint + `/api/employeesbyskill/${skillId}`,
+            method: 'GET',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            }
+        });
+        return response.data;
+    }
+    catch (e) {
+        console.log(e);
+        return (e.response);
+    }
+}
+
+export async function GetEmployeesByLevelId(levelId, Token) {
+    try {
+        const response = await axios({
+            url: apiEndpoint + `/api/employeesbylevel/${levelId}`,
+            method: 'GET',
+            headers:{
+                authorization: `Bearer ${Token}` 
+            }     
+        });
+        return response.data;
+    }
+    catch (e) {
+        console.log(e);
+        return (e.response);
+    }
+
+}

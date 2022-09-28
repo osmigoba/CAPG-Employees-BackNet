@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
 import  { AddEmployee }  from '../../httpService.js';
 import { useSelector } from 'react-redux'
+import Swal from 'sweetalert2'
 const modelEmployee = {
 
     firstName: "",
@@ -29,7 +30,14 @@ const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee, getAll
         const response = await AddEmployee(employee, token)
 
         if (response.status === 201){
-          window.confirm("The Employee has been saved")
+          await Swal.fire({
+            text: `The Employee # ${employee.firstName}  ${employee.lastName} has been created`,
+            icon: 'success',
+            confirmButtonColor: "#0066FF",
+            showCloseButton: true,
+            timer: 2000,
+            position: "top"
+          })
           setEmployee([]);
           getAllEmployees(token);
           handleClose();  

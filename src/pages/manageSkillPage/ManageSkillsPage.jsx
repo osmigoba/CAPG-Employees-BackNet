@@ -7,12 +7,18 @@ import { Table } from 'reactstrap';
 import { useSelector } from 'react-redux'
 import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import { motion } from "framer-motion"
-
+import Swal from 'sweetalert2'
 const skillObject = {
   skill: ""
 }
-
 const ManageSkillsPage = () => {
+
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
 
   const [skillData, setSkill] = useState(skillObject)
   const [ skills, setSkills ] = useState( [] )
@@ -42,42 +48,79 @@ const ManageSkillsPage = () => {
     })
 }
 
-const addSkill = async ( skillData, token) => {
+  const addSkill = async ( skillData, token) => {
 
-  if (skillData.skill.length === 0) {
-    window.confirm("Enter a Skill")
-    return;
-  }
-  const isFound = skills.some(element => {
-    if (element.skill.toLowerCase() === skillData.skill.toLowerCase()){
-      return true
+    if (skillData.skill.length === 0) {
+      await Toast.fire({
+        title: `Enter a Valid skill`,
+        icon: 'error',
+        timer: 1500,
+        position: "top"
+      })
+      return;
     }
-    return false
-  });
-  if (isFound){
-    window.confirm("Enter a new Skill, This skills already exists")
-    return;
-  }
+    const isFound = skills.some(element => {
+      if (element.skill.toLowerCase() === skillData.skill.toLowerCase()){
+        return true
+      }
+      return false
+    });
 
-  const response = await AddSkill(skillData.skill, token)
-  if (response.status === 201){
-    window.confirm("The new Skill has been saved")
-    setSkill([]);
-    getAllSkills(token);
-  }
-}
+    if (isFound){
+      Swal.fire({
+        text: `Enter a new skill, ${skillData.skill.toUpperCase()} already exists`,
+        icon: 'error',
+        confirmButtonColor: "#0066FF",
+        showCloseButton: true,
+        timer: 2000, 
+        position: "top"
+      })
+      return;
+    }
 
-const onHandleDelete = async (item, token) => {
-  const res = window.confirm("Are you sure yo want to delete this Skill?")
-  if (res){
-    const response = await DeleteSkill(item.id, token);
-    console.log(response)
-    if (response.status === 200){
+    const response = await AddSkill(skillData.skill.toUpperCase(), token)
+    if (response.status === 201){
+      await Toast.fire({
+        title: `The skill ${skillData.skill.toUpperCase()} has been added to the catalogue`,
+        icon: 'success',
+        confirmButtonColor: "#0066FF",
+        showCloseButton: true,
+        timer: 1500,
+        position: "top"
+      })
+
+      setSkill(skillObject);
       getAllSkills(token);
     }
   }
 
-  console.log(item)
+const onHandleDelete = async (item, token) => {
+
+  await Swal.fire({
+    text: `Are you sure you want to delete the Skill:  ${item.skill}?`,
+    icon: 'question',
+    confirmButtonColor: "#F44336",
+    showCancelButton: true,
+    showCloseButton: true,
+    position:"top",
+  }).then(async response  => {
+    if (response.isConfirmed){
+      const response = await DeleteSkill(item.id, token);
+      console.log(response)
+      if (response.status === 200){
+        getAllSkills(token);
+        await Toast.fire ({
+          text: `skill ${item.skill} deleted from Catalogue`,
+          icon: 'success',
+          confirmButtonColor: "#F44336",
+          showCloseButton: true,
+          position:"top",
+          timer: 1500
+        })
+      }
+    }
+  })
+
 }
 
   return (
@@ -92,7 +135,7 @@ const onHandleDelete = async (item, token) => {
         <Row>
           <FormGroup className='group1'>
             <Label className='addSkillLabel'>Add Skill</Label>
-            <Input name='skill' placeholder="Enter Skill" onChange={(e) => updateData(e)}/>
+            <Input name='skill' placeholder="Enter Skill" onChange={(e) => updateData(e)} value = {skillData.skill}/>
           </FormGroup>        
         </Row>
         <Row>

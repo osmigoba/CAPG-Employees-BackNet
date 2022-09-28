@@ -4,37 +4,50 @@ import  { DeleteEmployeeSkill}  from '../../httpService.js';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import { useSelector } from 'react-redux'
-
+import Swal from 'sweetalert2'
 const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsToshow,employee}) => {
 
   const { token } = useSelector((state) => state.auth.user)
   const closeModal = () => {
     setShowModal(false)
   }
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
   const onHandleRemove = async (item, token) => {
-
-    let responseConfirm = window.confirm("Do you really want to delete the skill?")
-    if (!responseConfirm){
-      return;
-    }
-    const response = await DeleteEmployeeSkill(item.skillID, employee.id, token);
-
-    if (response.status !== 200){
-      window.confirm("There was a problem deleting this skill")
-      return;
-    }
-    let skills = [...skillstoShow]
-    skills = skills.filter(skill => skill.skillID !== item.skillID)
-    setSkillsToshow(skills)
-    //closeModal();
-    
+    await Swal.fire({
+      text: `Are you sure you want to delete the Skill:  ${item.skill}?`,
+      icon: 'question',
+      confirmButtonColor: "#D32F2F ",
+      showCancelButton: true,
+      showCloseButton: true
+    }).then(async res => {
+      if (res.isConfirmed){
+        const response = await DeleteEmployeeSkill(item.skillID, employee.id, token);
+        if (response.status !== 200){
+          window.confirm("There was a problem deleting this skill")
+          return;
+        }
+        await Toast.fire({
+          title: `The skill ${item.skill} has been deleted`,
+          icon: 'success',
+          timer: 1500,
+          position: "top"
+        })
+        let skills = [...skillstoShow]
+        skills = skills.filter(skill => skill.skillID !== item.skillID)
+        setSkillsToshow(skills)          
+      }
+    })
   }
 
   return (
     
     <Modal show={showModal} onHide={closeModal}>
-      <Modal.Header closeButton>View Skills</Modal.Header>
+      <Modal.Header closeButton><b>View Skills</b></Modal.Header>
         <Modal.Body>
           <Table className='table table-striped' bordered>
             <thead className='text-dark'>

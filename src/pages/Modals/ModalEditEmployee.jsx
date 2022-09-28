@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
 import  { EditEmployee }  from '../../httpService.js';
 import { useSelector } from 'react-redux'
-
+import Swal from 'sweetalert2'
 const modelEmployee = {
     id: 0,
     firstName: "",
@@ -17,7 +17,12 @@ const modelEmployee = {
 
 const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, employeeWithSkills, getAllEmployees}) => {
   const { token } = useSelector((state) => state.auth.user)
-
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
   const [employee, setEmployee] =  useState(modelEmployee);
   useEffect ( () => {
     if (employeeWithSkills.length !== 0){
@@ -44,7 +49,12 @@ const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, emp
         console.log('click')
         const response = await EditEmployee(employee, token)
         if (response.status === 200){
-          window.confirm("The Employee has been Modified")
+          await Toast.fire({
+            title: `The Employee # ${employee.id} has been modified`,
+            icon: 'success',
+            timer: 1500,
+            position: "top"
+          })
           getAllEmployees(token)
           handleClose();  
         }

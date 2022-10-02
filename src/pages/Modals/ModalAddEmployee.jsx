@@ -1,10 +1,13 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
-import  { AddEmployee }  from '../../httpService.js';
-import { useSelector } from 'react-redux'
+// import  { AddEmployee }  from '../../httpService.js';
+import { useDispatch } from 'react-redux'
 import Swal from 'sweetalert2'
+import { addEmployeeRedux, resetAddState } from '../../features/employees/employeesSlice'
+
+
 const modelEmployee = {
 
     firstName: "",
@@ -14,34 +17,46 @@ const modelEmployee = {
     email: ""
 }
 
-const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee, getAllEmployees}) => {
-  const { token } = useSelector((state) => state.auth.user)
-    const [employee, setEmployee] =  useState(modelEmployee);
+const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee}) => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timerProgressBar: true,
+  })
+  const [employee, setEmployee] =  useState(modelEmployee);
 
+  ///////////////////  REDUX TOOLKIT //////////////////////////
+  const dispatch = useDispatch()
     const updateData = (e) => {
-        console.log(e.target.name + " : " + e.target.value)
         setEmployee({
           ...employee,
           [e.target.name]: e.target.value
         })
     }  
-    
-    const addEmployee = async (employee, token) => {
-        const response = await AddEmployee(employee, token)
 
-        if (response.status === 201){
-          await Swal.fire({
-            text: `The Employee # ${employee.firstName}  ${employee.lastName} has been created`,
+
+    const addEmployee = async (employeeData) => {
+       try {
+          await dispatch(addEmployeeRedux(employeeData)).unwrap()
+          await Toast.fire({
+            title: `Employee ${employeeData.firstName} ${employeeData.lastName} created`,
             icon: 'success',
-            confirmButtonColor: "#0066FF",
-            showCloseButton: true,
-            timer: 2000,
+            timer: 1500,
             position: "top"
-          })
+          }) 
+          dispatch(resetAddState())
           setEmployee([]);
-          getAllEmployees(token);
-          handleClose();  
-        }
+          handleClose();
+       } catch (error) {
+          await Toast.fire({
+            title: `Error Creating Employee ${error}`,
+            icon: 'success',
+            timer: 1500,
+            position: "top"
+          })          
+       }
+
     }
 
     const handleClose = () => {setshowModalAddEmployee(false);}
@@ -82,10 +97,9 @@ const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee, getAll
     
           <Modal.Footer>
 
-            <Button variant="success" onClick={() => addEmployee(employee, token)}>Save changes</Button>
+            <Button variant="success" onClick={() => addEmployee(employee)}>Save changes</Button>
           </Modal.Footer>
         </Modal>
       );
-}
-
+    };
 export default ModalAddEmployee

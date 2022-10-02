@@ -6,6 +6,10 @@ import { login } from '../../features/auth/authSlice'
 import "./Login.css";
 import { motion } from "framer-motion"
 import Swal from 'sweetalert2'
+import { getEmployeesRedux } from '../../features/employees/employeesSlice'
+import { getSkillsRedux } from '../../features/skills/skillsSlice'
+import { getLevelsRedux } from '../../features/expertiseLevel/levelsSlice'
+import { getskillOfEmployees } from '../../features/skillsofEmployees/skillsofEmployeesSlice'
 const Login = () => {
   const Toast = Swal.mixin({
     toast: true,
@@ -19,32 +23,52 @@ const Login = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     // Get the state from redux
-    const { isSuccess } = useSelector((state) => state.auth)
-
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      if (email.length <= 10 || password.length <= 2){
-        await Toast.fire({
-          title: `🙄 Please enter a valid email and Password`,
-          icon: 'error',
-          timer: 1500,
-          position: "top-end"
-        })
-        return
-      }
-      const userData = {
-        email,
-        password,
-      }
-      await dispatch(login(userData))
-
+  const { isSuccess } = useSelector((state) => state.auth)
+  const employeesState  = useSelector((state) => state.employeesState)
+  const  {getEmployeesStatus}  = employeesState;
+  const skillssState  = useSelector((state) => state.skillsState)
+  const  {getSkillsStatus}  = skillssState;
+  const levelsState  = useSelector((state) => state.levelsState)
+  const  {getLevelsStatus}  = levelsState; 
+  const skillEmployeesStatus = useSelector((state) => state.skillsOfEmployeesState)
+  const {getskillOfEmployeesStatus} = skillEmployeesStatus 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (email.length <= 10 || password.length <= 2){
+      await Toast.fire({
+        title: `🙄 Please enter a valid email and Password`,
+        icon: 'error',
+        timer: 1500,
+        position: "top-end"
+      })
+      return
     }
-    useEffect(() => {
-      if(isSuccess){
-        console.log("redirigí a home")
-        navigate("/home")
-      }
-    }, [isSuccess, navigate])
+    const userData = {
+      email,
+      password,
+    }
+    await dispatch(login(userData))
+
+  }
+  useEffect(() => {
+    if(isSuccess){
+    // Get All Employees
+    if (getEmployeesStatus !== "ok"){
+      dispatch(getEmployeesRedux())
+    }
+    if (getSkillsStatus !== 'ok'){
+      dispatch(getSkillsRedux())
+    }
+    if (getLevelsStatus !== 'ok'){
+      dispatch(getLevelsRedux())
+    }
+    if (getskillOfEmployeesStatus !== 'ok'){
+      dispatch(getskillOfEmployees())
+    }        
+
+      navigate("/home")
+    }
+  }, [isSuccess, navigate])
     
   return (
     <motion.div 

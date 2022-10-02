@@ -14,7 +14,7 @@ const closeModal = () => {
     <Modal show={showModal} onHide={closeModal}>
       <Modal.Header closeButton><b>View Skills</b></Modal.Header>
         <Modal.Body>
-          <Table className='table table-striped' bordered>
+          <Table className='table table-striped' bordered='true'>
             <thead className='text-dark'>
               <tr>
                 <th>#</th>

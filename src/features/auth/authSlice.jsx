@@ -9,7 +9,9 @@ const initialState = {
     isError: false,
     isSuccess: user ? true : false,
     isLoading: false,
-    message: ''
+    message: '',
+    name: 'User',
+    admin: false
 }
 const Toast = Swal.mixin({
     toast: true,
@@ -24,7 +26,7 @@ export const login = createAsyncThunk('auth/login', async(user, ThunkAPI) => {
           await Toast.fire({
             icon: 'success',
             title: '😎 Login successful',
-            timer: 1500
+            timer: 800
           })
         return data
     } catch (error) {
@@ -52,6 +54,8 @@ export const authSlice = createSlice({
             state.message = ''
             state.isSuccess = false
             state.user = null
+            state.name = 'User'
+            state.admin = false
           },        
     },
     extraReducers: (builder) => {
@@ -65,6 +69,8 @@ export const authSlice = createSlice({
                 state.error = false
                 state.isSuccess = true
                 state.user = action.payload
+                state.name = action.payload.email
+                state.admin = action.payload.admin
             })
 
             .addCase(login.rejected, (state, action) => {

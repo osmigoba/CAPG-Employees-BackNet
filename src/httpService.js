@@ -2,7 +2,6 @@ import axios from 'axios';
 // const apiEndpoint = '192.168.1.4:4321'
 // const apiEndpoint = 'https://localhost:7261'
 const apiEndpoint = 'http://localhost:4321'
-
 export async function GetAllEmployees(Token) {
 
     try {
@@ -28,6 +27,55 @@ export async function GetAllEmployeesRedux(Token) {
         }
     });
     return response.data;
+}
+
+export async function DeleteEmployeeRedux(employeeId, Token) {
+
+    const response = await axios({
+        url: apiEndpoint + "/api/employee/" + employeeId,
+        method: 'DELETE',
+        headers:{
+            authorization: `Bearer ${Token}` 
+        }
+    });
+    return response;
+}
+
+export async function AddEmployeeRedux(employee, token) {
+    const response = await axios({
+        url: apiEndpoint + "/api/employee",
+        method: 'POST',
+        headers:{
+            authorization: `Bearer ${token}` 
+        },
+        data: {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            doj: employee.doj + "T00:00:00-05:00",
+            email: employee.email,
+            designation: employee.designation
+        }
+
+    });
+    return response.data;
+}
+
+export async function EditEmployeeRedux(employee,Token) {
+    const response = await axios({
+        url: apiEndpoint + "/api/employee/" + employee.id,
+        method: 'PUT',
+        headers:{
+            authorization: `Bearer ${Token}` 
+        },
+        data: {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            doj: employee.doj,
+            email: employee.email,
+            designation: employee.designation
+        }
+    });
+    return response;
 }
 export async function GetAllSkills(Token) {
 
@@ -98,6 +146,8 @@ export async function DeleteEmployee(employeeId, Token) {
     }
 }
 
+
+
 export async function AddEmployee(employee, Token) {
 
     try {
@@ -123,6 +173,8 @@ export async function AddEmployee(employee, Token) {
         return (e.response);
     }
 }
+
+
 
 export async function EditEmployee(employee,Token) {
 

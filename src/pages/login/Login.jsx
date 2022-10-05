@@ -47,29 +47,36 @@ const Login = () => {
       email,
       password,
     }
-    await dispatch(login(userData))
+    dispatch(login(userData))
 
   }
-  useEffect(() => {
-    if(isSuccess){
-    // Get All Employees
-    if (getEmployeesStatus !== "ok"){
-      dispatch(getEmployeesRedux())
-    }
-    if (getSkillsStatus !== 'ok'){
-      dispatch(getSkillsRedux())
-    }
-    if (getLevelsStatus !== 'ok'){
-      dispatch(getLevelsRedux())
-    }
-    if (getskillOfEmployeesStatus !== 'ok'){
-      dispatch(getskillOfEmployees())
-    }        
+  useEffect( () => {
 
-      navigate("/home")
-    }
-  }, [isSuccess, navigate])
-    
+    if(isSuccess){
+      // Get All Employees
+      if (getEmployeesStatus !== "ok"){
+        dispatch(getEmployeesRedux())
+      }
+      // Get all Skills
+      if (getSkillsStatus !== 'ok'){
+        dispatch(getSkillsRedux())
+      }
+      // Get all Levels Expertise
+      if (getLevelsStatus !== 'ok'){
+        dispatch(getLevelsRedux())
+      }
+      // Get all Relationships many to many relation
+      if (getskillOfEmployeesStatus !== 'ok'){
+        dispatch(getskillOfEmployees())
+      }        
+  
+        navigate("/home")
+      }
+  
+   
+  }, [])
+
+ 
   return (
     <motion.div 
     initial={{opacity: 0, x: 100 }}

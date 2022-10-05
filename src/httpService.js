@@ -70,7 +70,7 @@ export async function EditEmployeeRedux(employee,Token) {
         data: {
             firstName: employee.firstName,
             lastName: employee.lastName,
-            doj: employee.doj,
+            doj: employee.doj + "T00:00:00-05:00",
             email: employee.email,
             designation: employee.designation
         }

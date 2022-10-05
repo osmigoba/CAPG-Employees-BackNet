@@ -74,7 +74,7 @@ const Login = () => {
       }
   
    
-  }, [])
+  }, [isSuccess])
 
  
   return (

@@ -10,6 +10,7 @@ import { getEmployeesRedux } from '../../features/employees/employeesSlice'
 import { getSkillsRedux } from '../../features/skills/skillsSlice'
 import { getLevelsRedux } from '../../features/expertiseLevel/levelsSlice'
 import { getskillOfEmployees } from '../../features/skillsofEmployees/skillsofEmployeesSlice'
+import loading from './loading.gif'
 const Login = () => {
   const Toast = Swal.mixin({
     toast: true,
@@ -23,7 +24,7 @@ const Login = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     // Get the state from redux
-  const { isSuccess } = useSelector((state) => state.auth)
+  const { isSuccess, isLoading } = useSelector((state) => state.auth)
   const employeesState  = useSelector((state) => state.employeesState)
   const  {getEmployeesStatus}  = employeesState;
   const skillssState  = useSelector((state) => state.skillsState)
@@ -78,41 +79,51 @@ const Login = () => {
 
  
   return (
-    <motion.div 
-    initial={{opacity: 0, x: 100 }}
-    animate={{opacity: 1, x: 0 }}
-    exit={{opacity: 0, x: -100 }}
-    transition={{duration: 0.7}}
-    className='login'>
-      <Form className='Login'>
-          <FormGroup className='Title'>
-              Admin Login
-          </FormGroup>
-          <FormGroup className='GroupClass'>
-              <Form.Label >
-                  Username
-              </Form.Label>
-              <Form.Control
-                      type="text"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-              />
-              <Form.Label className='PasswordLabel'>
-                  Password
-              </Form.Label>
-              <Form.Control
-                  type="password"
-                  value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-              /> 
-              <Button block="true" size="sm" type="submit"  className="paddingButton" onClick={(e) => handleSubmit(e)}>
-                  Login
-              </Button>                          
-          </FormGroup>
-      </Form>
-    </motion.div>
-
-
+    <div>
+      {isLoading ? (
+          <div className="overlay">
+            <div className="spinner-wrapper">
+                <img className="spiner-imagenLoader" src={loading}  alt="loading" ></img>
+            </div>
+          </div>
+      ) : (
+        (
+          <motion.div 
+          initial={{opacity: 0, x: 100 }}
+          animate={{opacity: 1, x: 0 }}
+          exit={{opacity: 0, x: -100 }}
+          transition={{duration: 0.7}}
+          className='login'>
+            <Form className='Login'>
+                <FormGroup className='Title'>
+                    Admin Login
+                </FormGroup>
+                <FormGroup className='GroupClass'>
+                    <Form.Label >
+                        Username
+                    </Form.Label>
+                    <Form.Control
+                            type="text"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <Form.Label className='PasswordLabel'>
+                        Password
+                    </Form.Label>
+                    <Form.Control
+                        type="password"
+                        value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                    /> 
+                    <Button block="true" size="sm" type="submit"  className="paddingButton" onClick={(e) => handleSubmit(e)}>
+                        Login
+                    </Button>                          
+                </FormGroup>
+            </Form>
+          </motion.div>
+        )
+      )}
+    </div>
   )
 }
 

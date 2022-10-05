@@ -64,7 +64,7 @@ const ManageEmployeesPage = () => {
         try {
           await dispatch(deleteEmployeeRedux(employee.id)).unwrap()
           dispatch(resetDeleteState())
-          await dispatch(deleteSkillsOfEmployeesByEmployeeId(employee.id))
+          dispatch(deleteSkillsOfEmployeesByEmployeeId(employee.id))
           await Toast.fire({
             title: `Employee ${employee.firstName + " "+employee.lastName} deleted`,
             icon: 'success',

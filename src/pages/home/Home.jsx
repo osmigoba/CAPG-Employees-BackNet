@@ -8,8 +8,9 @@ import Form from 'react-bootstrap/Form';
 import ModalHomeSkills from '../Modals/ModalHomeSkills.jsx';
 import ModalSearchEmployees from '../Modals/ModalSearchEmployeesBySkill.jsx';
 import ModalSearchEmployeesExpert from '../Modals/ModalSearchEmployeesByExpertise.jsx';
+import ModalSearchEmployeesBySkillAndLevelId from '../Modals/ModalSearchEmployeesBySkillAndLevelId.jsx';
 import { useSelector, useDispatch } from 'react-redux'
-
+import * as XLSX from "xlsx";
 import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import { motion } from "framer-motion"
 import Swal from 'sweetalert2'
@@ -30,6 +31,8 @@ const Home = () => {
   const [showModal, setShowModal] = useState(false)
   const [showModalSearchEmployees, setshowModalSearchEmployees] = useState(false)
   const [showModalSearchEmployeesExpert, setShowModalSearchEmployeesExpert] = useState(false)
+  const [showModalModalSearchEmployeesBySkillAndLevelId, setShowModalModalSearchEmployeesBySkillAndLevelId] = useState(false)
+  const [searchSkillAndLevel, setSearchSkillAndLevel] = useState([])
   const [skillToShow, setSkillToShow] = useState('')
   const [skillsbyemployee, setskillsbyemployee] = useState([])
   const [employeeWithskill, setEmployee] = useState([])
@@ -68,7 +71,6 @@ const Home = () => {
 
   const sendDataEmployee = async (employeedata) => {
     const filterSkillsOfEmployees = skillsOfEmployees.filter((skillemployee) => skillemployee.employeeId === employeedata.id)
-    console.log(filterSkillsOfEmployees)
     if (filterSkillsOfEmployees.length === 0){
       setskillsbyemployee([])
     } else {
@@ -81,7 +83,6 @@ const Home = () => {
 
   const onHandleSelectSkill  = async (skill) => {
     setemployeesSearchSkillLevel({...employeesSearchSkillLevel, skillId: skill.id})
-    console.log(employeesSearchSkillLevel)
     const listEmployeesWithSkillId = skillsOfEmployees.filter(skillOf => skillOf.skillID === skill.id)
     const varEmp = [];
     listEmployeesWithSkillId.forEach(item => {
@@ -137,24 +138,38 @@ const Home = () => {
   }
 
 
-  const handleSearchButton = ()=> {
-    const listOfemployeeSkills = skillsOfEmployees.filter(item => (item.skillID === employeesSearchSkillLevel.skillId && item.levelId === employeesSearchSkillLevel.levelId));
-    console.log('::::',listOfemployeeSkills)
+  const handleSearchButton = async ()=> {
+    const listOfemployeeSkills = skillsOfEmployees.filter(item => (item.skillID === employeesSearchSkillLevel.skillId));
+    const finalList = listOfemployeeSkills.filter(item => item.levelId === employeesSearchSkillLevel.levelId)
+    console.log('::::',finalList)
+    console.log(employeesSearchSkillLevel)
+    
     const varEmp = [];
-    listOfemployeeSkills.forEach(item => {
+    finalList.forEach(item => {
+      console.log(item)
       employees.forEach(emplo => {
         if(emplo.id === item.employeeId){
-          // const newObj = {...emplo};
-          // newObj.levelName = item.level;
-          // newObj.skill = item.skill;
           varEmp.push(emplo);
         }
       })
     })
     console.log('varEmployees: ', varEmp)
-    const filteredEmployees = varEmp;
     console.log(filteredEmployees)
+    if (varEmp.length !== 0){
+      setemployeesSearch(varEmp)
+      setSearchSkillAndLevel(finalList)
+      setShowModalModalSearchEmployeesBySkillAndLevelId(true)
+    } else {
+       Toast.fire({
+        title: `🤨 There are not Employees with skill ${(skills.filter(item => item.id === employeesSearchSkillLevel.skillId))[0].skill} and expertise ${(levels.filter(item => item.id === employeesSearchSkillLevel.levelId))[0].name}`,
+        icon: 'error',
+        timer: 2000,
+        position: "top"
+      })
+    } 
   }
+
+
   const handleChange = (event) =>{ 
     setSearch(event.target.value); 
   }
@@ -162,6 +177,54 @@ const Home = () => {
     employees.filter(employee => 
       employee.firstName.toLowerCase().includes(search.toLowerCase())
     )
+  const handleExport = async () => {
+    // const listFiltered = skillsOfEmployees.map(item => ({
+    //   EmployeeId: item.employeeId,
+    //   skill: item.skill,
+    //   expertise: item.level,
+    //   experience: item.experience
+    // }))  
+    // console.log(listFiltered)
+    // const listEmployeesModified = employees.map(emp => ({
+    //   ...emp,
+    //   skills: listFiltered.filter(i => i.EmployeeId === emp.id).map(item => ({
+    //     skill: item.skill,
+    //     expertise: item.expertise,
+    //     experience: item.experience        
+    //   }))
+    // }));
+    const employeesmodified = employees.map(item => ({
+      id: item.id,
+      fullName: `${item.firstName} ${item.lastName}`,
+      email: item.email,
+      doj: item.doj,
+      designation: item.designation,
+    }))
+    const finalList = skillsOfEmployees.map(item => ({
+      employeeId: item.employeeId,
+      name: employees.filter(i => i.id === item.employeeId).map(obj => 
+          `${obj.firstName} ${obj.lastName}`)[0],
+      skill: item.skill,
+      expertiseLevel: item.level,
+      experience: item.experience
+    }))
+
+    console.log('primera lista :', employeesmodified)
+    console.log('lista final de skills con el nombre :', finalList)
+
+    let workBook = XLSX.utils.book_new();
+    let workSheet1 = XLSX.utils.json_to_sheet(employeesmodified);
+    let workSheet2 = XLSX.utils.json_to_sheet(finalList);
+    XLSX.utils.book_append_sheet(workBook, workSheet1, 'Employees');
+    XLSX.utils.book_append_sheet(workBook, workSheet2, 'Skills');
+    XLSX.writeFile(workBook, "Report.xlsx");
+    await Toast.fire({
+      title: `The Report hass been created Successfully`,
+      icon: 'success',
+      timer: 2000,
+      position: "top"
+    }) 
+  }
   return (
     <motion.div
       initial={{opacity: 0, x: 100 }}
@@ -205,7 +268,7 @@ const Home = () => {
         <Row>
           <FormGroup className='formgroup1'>
             <Label >Total Found: {employees.length} Results {' '}
-              <Button color="secondary" size="sm">
+              <Button color="secondary" size="sm" onClick={() => handleExport()}>
                 Export to Excel 
               </Button>
             </Label>
@@ -242,6 +305,7 @@ const Home = () => {
           showModal = {showModal} 
           setShowModal = {setShowModal}
           skillstoShow = {skillsbyemployee}
+          employee = {employeeWithskill}
         />
         <ModalSearchEmployees
           showModal = {showModalSearchEmployees}
@@ -258,6 +322,14 @@ const Home = () => {
           ) : (
             <> </>
         )}
+        {showModalModalSearchEmployeesBySkillAndLevelId ? (
+          <ModalSearchEmployeesBySkillAndLevelId
+            showModal={showModalModalSearchEmployeesBySkillAndLevelId}
+            setShowModal = {setShowModalModalSearchEmployeesBySkillAndLevelId}
+            employees = {employeesSearch}
+            skillsLevel = {searchSkillAndLevel}
+          />
+        ) : (null)}
 
       </Container>
     ) : (

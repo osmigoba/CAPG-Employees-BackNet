@@ -67,7 +67,7 @@ function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />    
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end" >
             <Nav >
-              <NavDropdown title="Admin" id="navbarScrollingDropdown">
+              <NavDropdown title={name} id="navbarScrollingDropdown">
                 <NavDropdown.Item onClick={ (e) => logOut(e) }>{isSuccess ? 'logout' : 'login'}</NavDropdown.Item>
               </NavDropdown>
             </Nav>

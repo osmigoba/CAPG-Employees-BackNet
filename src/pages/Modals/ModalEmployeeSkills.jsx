@@ -57,7 +57,7 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
   return (
     
     <Modal show={showModal} onHide={closeModal}>
-      <Modal.Header closeButton><b>View Skills</b></Modal.Header>
+      <Modal.Header closeButton><b>View Skills of {employee.firstName} {employee.lastName} </b></Modal.Header>
         <Modal.Body>
           <Table className='table table-striped' bordered='true'>
             <thead className='text-dark'>

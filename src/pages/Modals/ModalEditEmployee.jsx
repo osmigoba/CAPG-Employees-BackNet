@@ -71,7 +71,7 @@ const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, emp
           onHide={handleClose}
           >
           <Modal.Header closeButton>
-            <Modal.Title>Edit Employee</Modal.Title>
+            <Modal.Title>Edit Employee {employeeWithSkills && employeeWithSkills.firstName} {employeeWithSkills && employeeWithSkills.lastName}</Modal.Title>
           </Modal.Header>
     
           <Modal.Body>

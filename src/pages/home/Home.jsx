@@ -272,7 +272,7 @@ const Home = () => {
                 Export to Excel 
               </Button>
             </Label>
-              <Table className='table table-striped' bordered='true' size="sm">
+              <Table className='table table-striped table-responsive' bordered='true' size="sm">
                 <thead className='text-dark'>
                   <tr>
                     <th> # </th>

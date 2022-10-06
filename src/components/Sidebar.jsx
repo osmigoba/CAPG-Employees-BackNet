@@ -4,13 +4,12 @@ import { useSelector } from 'react-redux'
 import { motion } from "framer-motion"
 const Sidebar = () => {
   const { isSuccess } = useSelector((state) => state.auth)
-  return (
-    <motion.div 
-      initial={{opacity: 0, x: 100 }}
-      animate={{opacity: 1, x: 0 }}
-      exit={{opacity: 0, x: -100 }}
-      transition={{duration: 0.7}}
-      className="sidebar bg-light">
+  return (<div>{isSuccess ? (    <motion.div 
+    initial={{opacity: 0, x: 100 }}
+    animate={{opacity: 1, x: 0 }}
+    exit={{opacity: 0, x: -100 }}
+    transition={{duration: 0.7}}
+    className="sidebar bg-light">
     <ul>
         <li>
             <center>
@@ -37,9 +36,7 @@ const Sidebar = () => {
 
         </li>
     </ul>
-    </motion.div>
-
-  )
+  </motion.div>) : (null)}</div>)
 }
 
 export default Sidebar

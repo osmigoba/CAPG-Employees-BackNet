@@ -36,7 +36,7 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (email.length <= 10 || password.length <= 2){
-      await Toast.fire({
+       Toast.fire({
         title: `🙄 Please enter a valid email and Password`,
         icon: 'error',
         timer: 1500,
@@ -94,32 +94,35 @@ const Login = () => {
           exit={{opacity: 0, x: -100 }}
           transition={{duration: 0.7}}
           className='login'>
-            <Form className='Login'>
-                <FormGroup className='Title'>
-                    Admin Login
-                </FormGroup>
-                <FormGroup className='GroupClass'>
-                    <Form.Label >
-                        Username
-                    </Form.Label>
-                    <Form.Control
-                            type="text"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <Form.Label className='PasswordLabel'>
-                        Password
-                    </Form.Label>
-                    <Form.Control
-                        type="password"
-                        value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                    /> 
-                    <Button block="true" size="sm" type="submit"  className="paddingButton" onClick={(e) => handleSubmit(e)}>
-                        Login
-                    </Button>                          
-                </FormGroup>
-            </Form>
+            <div className='firstDiv'>
+              <Form className='Login'>
+                  <FormGroup className='Title'>
+                      Admin Login
+                  </FormGroup>
+                  <FormGroup className='GroupClass'>
+                      <Form.Label >
+                          Username
+                      </Form.Label>
+                      <Form.Control
+                              type="text"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                      />
+                      <Form.Label className='PasswordLabel'>
+                          Password
+                      </Form.Label>
+                      <Form.Control
+                          type="password"
+                          value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                      /> 
+                      <Button block="true" size="sm" type="submit"  className="paddingButton" onClick={(e) => handleSubmit(e)}>
+                          Login
+                      </Button>                          
+                  </FormGroup>
+              </Form>
+            </div>
+
           </motion.div>
         )
       )}

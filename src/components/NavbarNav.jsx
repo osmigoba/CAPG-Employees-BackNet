@@ -53,7 +53,7 @@ function NavBar() {
 
 
   }
-  return (
+  return (<div>{isSuccess ? (
     <motion.div
       initial={{opacity: 0, x: 100 }}
       animate={{opacity: 1, x: 0 }}
@@ -74,8 +74,9 @@ function NavBar() {
           </Navbar.Collapse>
       </Container>
     </Navbar>
-    </motion.div>
-  )
+    </motion.div>    
+
+  ): (null)}</div>)
 }
 
 export default NavBar;

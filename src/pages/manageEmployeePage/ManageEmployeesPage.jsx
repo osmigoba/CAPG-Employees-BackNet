@@ -133,7 +133,7 @@ const ManageEmployeesPage = () => {
       </Row>
       <Row>
         <FormGroup>
-          <Table className='table table-striped' bordered='true' size="sm" responsive>
+          <Table responsive className='table table-striped' bordered='true' size="sm">
             <thead className='text-dark'>
               <tr>
                 <th> # </th>

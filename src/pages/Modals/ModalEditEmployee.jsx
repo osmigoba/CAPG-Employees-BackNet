@@ -36,6 +36,13 @@ const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, emp
   }, [employeeWithSkills])
 
     const updateData = (e) => {
+      if (e.target.name === 'doj') {
+        setEmployee({
+          ...employee,
+          [e.target.name]: e.target.value + "T00:00:00-05:00"
+        })  
+        return        
+      }
         setEmployee({
           ...employee,
           [e.target.name]: e.target.value

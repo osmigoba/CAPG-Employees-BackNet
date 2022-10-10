@@ -2,14 +2,20 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { motion } from "framer-motion"
+import Container from 'react-bootstrap/Container';
 const Sidebar = () => {
   const { isSuccess } = useSelector((state) => state.auth)
-  return (<div>{isSuccess ? (    <motion.div 
-    initial={{opacity: 0, x: 100 }}
-    animate={{opacity: 1, x: 0 }}
-    exit={{opacity: 0, x: -100 }}
-    transition={{duration: 0.7}}
-    className="sidebar bg-light">
+  return (<>{isSuccess ? (    
+    // <Container fluid>
+    // <motion.div 
+    // initial={{opacity: 0, x: 100 }}
+    // animate={{opacity: 1, x: 0 }}
+    // exit={{opacity: 0, x: -100 }}
+    // transition={{duration: 0.7}}
+    // className="sidebar bg-light">
+    <div className='sidebar'>
+
+    
     <ul>
         <li>
             <center>
@@ -36,7 +42,10 @@ const Sidebar = () => {
 
         </li>
     </ul>
-  </motion.div>) : (null)}</div>)
+    </div>
+  // </motion.div>
+  // </Container>
+  ) : (null)}</>)
 }
 
 export default Sidebar

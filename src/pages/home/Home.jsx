@@ -234,7 +234,7 @@ const Home = () => {
     >{ isSuccess ? (
         <Container>
         <Row>
-          <Col>
+          <Col sm={6}>
             <FormGroup  className='formgroup1' value={1} id='1' key={1}>
               <Label >Search by Name</Label>
               <Form.Control  id="Email" placeholder="Search Employees" onChange={(event) => handleChange(event)}/>
@@ -248,7 +248,7 @@ const Home = () => {
               </Form.Select>
             </FormGroup> 
           </Col>
-          <Col>
+          <Col sm={6}>
             <FormGroup className='formgroup1'>
               <Label>Search by Skills</Label>
               <Form.Select className='inputSkills' type="select" name="selectMulti" id="SelectMul" multiple size={5}>
@@ -272,7 +272,7 @@ const Home = () => {
                 Export to Excel 
               </Button>
             </Label>
-              <Table className='table table-striped table-responsive' bordered='true' size="sm">
+              <Table responsive className='table table-striped' bordered='true' size="sm">
                 <thead className='text-dark'>
                   <tr>
                     <th> # </th>

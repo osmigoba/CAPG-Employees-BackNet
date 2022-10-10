@@ -71,6 +71,7 @@ const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, 
         position: "top"
       })  
       console.log(skillPassed)    
+      handleClose()
     } catch(error) {
       await Toast.fire({
         title: `🤨 Error Adding the skill ${skillAdd.skill}, error: ${error.data.error}`,

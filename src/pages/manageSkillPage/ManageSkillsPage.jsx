@@ -29,9 +29,9 @@ const ManageSkillsPage = () => {
   const token = JSON.parse(localStorage.getItem('token'))
   const skillssState  = useSelector((state) => state.skillsState)
   const  {skills}  = skillssState;
-  const { admin } = useSelector((state) => state.auth)
+
   const skillEmployeesStatus = useSelector((state) => state.skillsOfEmployeesState)
-  const {skillsOfEmployees, getskillOfEmployeesStatus} = skillEmployeesStatus 
+  const {skillsOfEmployees} = skillEmployeesStatus 
   useEffect ( () => {
 
   }, [])
@@ -123,6 +123,7 @@ const onHandleDelete = async (skillToDelete, token) => {
           position: "top"
         })
       } catch(error) {
+        console.log("Error catch: ",error)
         await Toast.fire({
           title: `Error deleting skill ${error}`,
           icon: 'error',
@@ -152,14 +153,14 @@ const onHandleDelete = async (skillToDelete, token) => {
         <Row>
           <Col>
             <FormGroup>
-              <Button color="primary" size="sm" onClick={() => addSkill(skillData, token)} disabled={ admin ? false : true }>Add</Button>
+              <Button color="primary" size="sm" onClick={() => addSkill(skillData, token)}>Add</Button>
             </FormGroup>
           </Col>        
         </Row>
         <Row>
         <div>
         <FormGroup>
-              <Table className='table table-striped' bordered='true' size="sm">
+              <Table className='table table-striped' bordered={true} size="sm" hover='true'>
                 <thead className='text-dark' bordered='true'>
                   <tr>
                     <th> # </th>
@@ -173,7 +174,7 @@ const onHandleDelete = async (skillToDelete, token) => {
                       <td> { item.id } </td>
                       <td> {item.skill}</td>
                       <td>
-                        <Button color="danger" size="sm" onClick={() => onHandleDelete(item, token)} disabled={ admin ? false : true }>Delete</Button>
+                        <Button color="danger" size="sm" onClick={() => onHandleDelete(item, token)}>Delete</Button>
                       </td>
                     </tr>
                   )) }

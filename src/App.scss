@@ -12,31 +12,28 @@ body {
 $light: #ffffff;
 $gray: #e7e9eb;
 
-// .flex {
-//   display: flex;
-// }
+
 
 .navbar {
   background-color: $light;
   // padding: 1rem 2rem;
   border-bottom: 2px solid $gray
 }
-
-.cols1 {
-  padding: 0;
-  margin: 0%;
-
-  background-color:$light;
-}
-// .rows {
-//   padding-left: 0rem;
-//   padding-right: 0%;
-//   margin: 0%;
-// }
 .containerMain {
-  padding-left: 0%;
-  
+  padding-left: 0;
+  padding-right: 0;
 }
+.mainRow {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.mainCols {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .sidebar {
   // // width: calc(30vh - 10px);
   // width: 15rem;
@@ -46,6 +43,7 @@ $gray: #e7e9eb;
   // padding-left: 0%;
   // padding-right: 0%;
   border-right: 3px solid $gray;
+  border-left: 3px solid $gray;
   background-color: $light;
   
   ul {
@@ -73,6 +71,5 @@ $gray: #e7e9eb;
 @media only screen and (max-width: 576px) {
   .sidebar {
     height: auto;
-
   }
 }

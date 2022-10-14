@@ -38,10 +38,10 @@ const ManageEmployeesPage = () => {
   const skillssState  = useSelector((state) => state.skillsState)
   const  {skills}  = skillssState;
   const levelsState  = useSelector((state) => state.levelsState)
-  const  {levels, getLevelsStatus}  = levelsState;  
-  const { admin } = useSelector((state) => state.auth)
+  const  {levels}  = levelsState;  
+
   const skillEmployeesStatus = useSelector((state) => state.skillsOfEmployeesState)
-  const {skillsOfEmployees, getskillOfEmployeesStatus} = skillEmployeesStatus 
+  const {skillsOfEmployees} = skillEmployeesStatus 
 
   const token = JSON.parse(localStorage.getItem('token'))
   useEffect ( () => {
@@ -126,14 +126,14 @@ const ManageEmployeesPage = () => {
       <Container>
       <Row>
         <FormGroup>
-          <Input className='AddEmployee' type="select" id="exampleSelect" onClick={ () => geDataToLaunchModal()} disabled={ admin ? false : true }>
+          <Input className='AddEmployee' type="select" id="exampleSelect" onClick={ () => geDataToLaunchModal()}>
             <option>Click to Add Employee</option>
           </Input>
         </FormGroup>
       </Row>
       <Row>
         <FormGroup>
-          <Table responsive className='table table-striped' bordered='true' size="sm">
+          <Table responsive className='table table-striped' bordered='true' size="sm" hover='true' >
             <thead className='text-dark'>
               <tr>
                 <th> # </th>
@@ -155,10 +155,10 @@ const ManageEmployeesPage = () => {
                   <td>
 
                       {/* Pass Employee to modal */}
-                    <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee, token) }>View Skills</Button> {' '}
-                    <Button color="warning" size="sm" onClick={ () => getDataToLaunchAddSkillModal(employee)} disabled={ admin ? false : true }>Assign Skills</Button> {' '}
-                    <Button color="success" size="sm" onClick={ () => getDataTolaunchModalEditEmployee(employee)} disabled={ admin ? false : true }>Edit</Button>{' '}
-                    <Button color="danger" size="sm" onClick={ () => deleteEmployee(employee, token) } disabled={ admin ? false : true }>Delete</Button>
+                    <Button className='buttons' color="info" size="sm" onClick={ () => sendDataEmployee(employee, token) }>View Skills</Button> {' '}
+                    <Button className='buttons' color="warning" size="sm" onClick={ () => getDataToLaunchAddSkillModal(employee)} >Assign Skills</Button> {' '}
+                    <Button className='buttons' color="success" size="sm" onClick={ () => getDataTolaunchModalEditEmployee(employee)} >Edit</Button>{' '}
+                    <Button className='buttons' color="danger" size="sm" onClick={ () => deleteEmployee(employee, token) } >Delete</Button>
                   </td>
                 </tr>
               )) }

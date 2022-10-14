@@ -52,6 +52,11 @@ function NavBar() {
     }
 
 
+
+  }
+
+  const onHandlClick = () => {
+    console.log("click")
   }
   return (<div>{isSuccess ? (
     <motion.div
@@ -62,7 +67,7 @@ function NavBar() {
     >
     <Navbar bg="light" expand="sm">
       <Container>
-        <Navbar.Brand><span className="navbar-toggler-icon"></span></Navbar.Brand>
+        <Navbar.Brand><span className="navbar-toggler-icon" onClick={() => onHandlClick()}></span></Navbar.Brand>
         <Navbar.Brand >Employee Skills Management</Navbar.Brand>  
         <Navbar.Toggle aria-controls="basic-navbar-nav" />    
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end" >

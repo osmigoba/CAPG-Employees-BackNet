@@ -9,6 +9,7 @@ const initialState = {
     addEmployeesStatus:"",
     deleteEmployeeStatus:"",
     updateEmployeeStatus:"",
+    statusText: "",
 }
 
 export const getEmployeesRedux = createAsyncThunk('employees/GetEmployees', async(ThunkAPI) => {
@@ -28,8 +29,8 @@ export  const addEmployeeRedux = createAsyncThunk('employees/AddEmployee', async
         const data = await AddEmployeeRedux(employeeData, TToken)
         return data
     } catch(error) {
-        const message = error.toString()
-        return ThunkAPI.rejectWithValue(message)
+
+        return ThunkAPI.rejectWithValue(error.response.statusText)
     }
 })
 
@@ -39,8 +40,7 @@ export  const deleteEmployeeRedux = createAsyncThunk('employees/DeleteEmployee',
         const response = await DeleteEmployeeRedux(employeeID, TToken)
         return response.data;
     } catch(error) {
-        const message = error.toString()
-        return ThunkAPI.rejectWithValue(message)
+        return ThunkAPI.rejectWithValue(error.response.statusText)
     }
 })
 
@@ -50,8 +50,8 @@ export  const updateEmployeeRedux = createAsyncThunk('employees/UpdateEmployee',
         const response = await EditEmployeeRedux(employee, TToken)
         return response.data;
     } catch(error) {
-        const message = error.toString()
-        return ThunkAPI.rejectWithValue(message)
+
+        return ThunkAPI.rejectWithValue(error.response.statusText)
     }
 })
 
@@ -104,6 +104,7 @@ export const employeesSlice = createSlice({
 
             .addCase(addEmployeeRedux.rejected, (state, action) => {
                state.addEmployeesStatus = "error" 
+               state.statusText = action.payload
             })
 
             /// Reducer for DeleteEmployee Method
@@ -119,6 +120,7 @@ export const employeesSlice = createSlice({
 
             .addCase(deleteEmployeeRedux.rejected, (state, action) => {
                state.deleteEmployeeStatus = "error" 
+               state.statusText = action.payload
             })            
            
             /// Reducer for UpdateEmployee Method
@@ -134,6 +136,7 @@ export const employeesSlice = createSlice({
 
             .addCase(updateEmployeeRedux.rejected, (state, action) => {
                state.updateEmployeeStatus = "error" 
+               state.statusText = action.payload
             })             
     }
 })

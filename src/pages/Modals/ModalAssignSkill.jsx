@@ -17,7 +17,6 @@ const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, 
     level:'',
     experience: 1
   }
-  const { admin } = useSelector((state) => state.auth)
   const skillEmployeesStatus = useSelector((state) => state.skillsOfEmployeesState)
   const { skillsOfEmployees } = skillEmployeesStatus 
   const [skillAdd, setSkillAdd] = useState( modelSkillAdd )
@@ -74,7 +73,7 @@ const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, 
       handleClose()
     } catch(error) {
       await Toast.fire({
-        title: `🤨 Error Adding the skill ${skillAdd.skill}, error: ${error.data.error}`,
+        title: `🤨 Error Adding the skill ${skillAdd.skill}, ${error}`,
         icon: 'error',
         timer: 1000,
         position: "top"
@@ -150,7 +149,7 @@ const ModalAssignSkill = ({employee, showModalAddskills, setshowModalAddskills, 
 
     <Modal.Footer>
       <Button variant="secondary" onClick={() => handleClose()}>Close</Button>
-      <Button variant="success" onClick={(event) => AssignSkill(event, employee.id)} disabled={ admin ? false : true }>Save</Button>
+      <Button variant="success" onClick={(event) => AssignSkill(event, employee.id)}>Save</Button>
     </Modal.Footer>
   </Modal>
   )

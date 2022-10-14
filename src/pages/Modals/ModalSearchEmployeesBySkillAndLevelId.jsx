@@ -12,7 +12,7 @@ const ModalSearchEmployeesBySkillAndLevelId = ({showModal, setShowModal, employe
     <Modal show={showModal} onHide={closeModal}>
       <Modal.Header closeButton><b>{employees.length} Employees with skill {skillsLevel[0].skill} and level {skillsLevel[0].level}</b></Modal.Header>
         <Modal.Body>
-        <Table className='table table-striped' bordered='true' size="sm">
+        <Table className='table table-striped' bordered='true' size="sm" hover='true'>
                   <thead className='text-dark'>
                     <tr>
                       <th> # </th>

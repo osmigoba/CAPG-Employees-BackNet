@@ -7,6 +7,7 @@ const initialState = {
     getskillOfEmployeesStatus:"",
     deleteSkillOfEmployeeStatus:"",
     addSkillOfEmployeeStatus: "",
+    statusText: "",
 }
 
 export const getskillOfEmployees = createAsyncThunk('skillsOfEmployees/GetSkillsOfEmployees', async(ThunkAPI) => {
@@ -39,8 +40,8 @@ export const deleteSkillOfEmployee = createAsyncThunk('skillsOfEmployees/DeleteS
         });
         return response.data;
     } catch (error) {
-        const message = error.toString()
-        return ThunkAPI.rejectWithValue(message)
+        //const message = error.toString()
+        return ThunkAPI.rejectWithValue(error.response.statusText)
     }
 })
 
@@ -62,7 +63,7 @@ export const assignSkillOfEmployee = createAsyncThunk('skillsOfEmployees/AddSkil
         });
         return skillAdd;
     } catch (error) {
-        return ThunkAPI.rejectWithValue(error.response)
+        return ThunkAPI.rejectWithValue(error.response.statusText)
     }
 })
 
@@ -121,11 +122,11 @@ export const skillsofEmployeesSlice = createSlice({
             })
             currentskillEmployees.splice(indice, 1);  
             state.skillsOfEmployees = currentskillEmployees
-            console.log(indice)
 
         })
         .addCase(deleteSkillOfEmployee.rejected, (state, action) => {
             state.deleteSkillOfEmployeeStatus = "error"
+            state.statusText = action.payload
         })
 
         //Add SkillEmployees
@@ -139,6 +140,7 @@ export const skillsofEmployeesSlice = createSlice({
         
         .addCase(assignSkillOfEmployee.rejected, (state, action) => {
             state.addSkillOfEmployeeStatus = "error"
+            state.statusText = action.payload
         })
     }
 

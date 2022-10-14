@@ -22,7 +22,7 @@ const ModalHomeSkills = ({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Table className="table table-striped" bordered="true">
+        <Table className="table table-striped" bordered="true" hover='true'>
           <thead className="text-dark">
             <tr>
               <th>#</th>

@@ -12,7 +12,7 @@ const ModalSearchEmployeesBySkill = ({showModal, setShowModal, employees, skill}
     <Modal show={showModal} onHide={closeModal}>
       <Modal.Header closeButton><b>{employees.length} Employees found with {skill} skill </b></Modal.Header>
         <Modal.Body>
-        <Table className='table table-striped' bordered='true' size="sm">
+        <Table className='table table-striped' bordered='true' size="sm" hover='true'>
                   <thead className='text-dark'>
                     <tr>
                       <th> # </th>

@@ -12,7 +12,7 @@ const ModalSearchEmployeesByExpertise = ({showModal, setShowModal, employees}) =
     <Modal show={showModal} onHide={closeModal}>
       <Modal.Header closeButton><b>{employees.length} Registers Found with the Expertise {employees[0].levelName}</b></Modal.Header>
         <Modal.Body>
-        <Table className='table table-striped' bordered='true' size="sm">
+        <Table className='table table-striped' bordered='true' size="sm" hover='true'>
                   <thead className='text-dark'>
                     <tr>
                       <th> # </th>

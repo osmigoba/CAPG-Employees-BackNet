@@ -8,6 +8,7 @@ const initialState = {
     addSkillStatus:"",
     deleteSkillStatus:"",
     updateSkillStatus: "",
+    statusText: "",
 
 }
 
@@ -40,8 +41,7 @@ export const deleteSkillRedux = createAsyncThunk('skills/DeleteSkill', async(ski
         });  
         return response.data
     } catch (error) {
-        const message = error.toString()
-        return ThunkAPI.rejectWithValue(message)
+        return ThunkAPI.rejectWithValue(error.response.statusText)
     }
 })
 
@@ -58,8 +58,8 @@ export const addSkillRedux = createAsyncThunk('skills/AddSkill', async(skill,Thu
         }); 
         return response.data
     } catch (error) {
-        const message = error.toString()
-        return ThunkAPI.rejectWithValue(message)
+
+        return ThunkAPI.rejectWithValue(error.response.statusText)
     }
 })
 
@@ -110,6 +110,7 @@ export const skillsSlice = createSlice({
 
         .addCase(deleteSkillRedux.rejected, (state, action) => {
             state.deleteSkillStatus = "error" 
+            state.statusText = action.payload
         })      
         
         /// Reducer for Add Skill Method
@@ -124,6 +125,7 @@ export const skillsSlice = createSlice({
 
         .addCase(addSkillRedux.rejected, (state, action) => {
             state.addSkillStatus = "error" 
+            state.statusText = action.payload
         })  
     },   
 })

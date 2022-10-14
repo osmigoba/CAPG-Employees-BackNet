@@ -1,20 +1,16 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import  { DeleteEmployeeSkill}  from '../../httpService.js';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import { useSelector, useDispatch  } from 'react-redux'
 import { deleteSkillOfEmployee, resetDeleteSkillOfEmployeeState } from '../../features/skillsofEmployees/skillsofEmployeesSlice'
 import Swal from 'sweetalert2'
 const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsToshow, employee}) => {
-  const { admin } = useSelector((state) => state.auth)
   const { token } = useSelector((state) => state.auth.user)
-  const skillEmployeesStatus = useSelector((state) => state.skillsOfEmployeesState)
-  const {skillsOfEmployees, getskillOfEmployeesStatus} = skillEmployeesStatus 
   const dispatch = useDispatch()
   const closeModal = () => {
     setShowModal(false)
-  }
+  } 
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -44,7 +40,7 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
           setSkillsToshow(newskills)
         } catch(error) {
           await Toast.fire({
-            title: `Error Creating Employee ${error}`,
+            title: `Error Deleting skill ${error}`,
             icon: 'error',
             timer: 1500,
             position: "top"
@@ -59,7 +55,7 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
     <Modal show={showModal} onHide={closeModal}>
       <Modal.Header closeButton><b>View Skills of {employee.firstName} {employee.lastName} </b></Modal.Header>
         <Modal.Body>
-          <Table className='table table-striped' bordered='true'>
+          <Table className='table table-striped' bordered='true' hover='true'>
             <thead className='text-dark'>
               <tr>
                 <th>#</th>
@@ -73,7 +69,7 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
                 { skillstoShow.map( (item, index) =>(
                     <tr key={index}>
                       <td>
-                        <Button variant="danger" size="sm" onClick={() => onHandleRemove(item, token)} disabled={ admin ? false : true }>Remove</Button> 
+                        <Button variant="danger" size="sm" onClick={() => onHandleRemove(item, token)} >Remove</Button> 
                       </td>
                       <td> {item.skill} </td>
                       <td> {item.level} </td>

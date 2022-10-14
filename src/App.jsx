@@ -12,15 +12,19 @@ import ManageSkillsPage from './pages/manageSkillPage/ManageSkillsPage'
 function App() {
   return (
     <BrowserRouter>
-      <Container fluid className='containerMain'>
-        <Row className='rows' fluid>
-          <Col sm={3} md={3} lg={2} className='cols1'>
+    <Routes>
+    <Route path='/'  exact="true" element={<Login />}></Route>
+    </Routes>
+      
+      <Container fluid={true} className='containerMain'>
+        <Row className='mainRow'>
+          <Col sm={3} md={3} lg={2} className='mainCols'>
             <Sidebar />
           </Col>
-          <Col sm={9} md={9} lg={10} className='cols'>
+          <Col sm={9} md={9} lg={10} className='mainCols'>
               <NavbarNav />
               <Routes>
-                <Route path='/'  exact="true" element={<Login />}></Route>
+                {/* <Route path='/'  exact="true" element={<Login />}></Route> */}
                 <Route path='/home'  exact="true" element={<Home />}></Route>
                 <Route path='/employee/manage' exact="true" element={<ManageEmployeesPage />}></Route>
                 <Route path='/employee/skills' exact="true" element={<ManageSkillsPage />}></Route>

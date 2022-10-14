@@ -1,8 +1,7 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
-// import  { AddEmployee }  from '../../httpService.js';
 import { useDispatch } from 'react-redux'
 import Swal from 'sweetalert2'
 import { addEmployeeRedux, resetAddState } from '../../features/employees/employeesSlice'
@@ -28,6 +27,7 @@ const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee}) => {
 
   ///////////////////  REDUX TOOLKIT //////////////////////////
   const dispatch = useDispatch()
+
     const updateData = (e) => {
         setEmployee({
           ...employee,
@@ -51,7 +51,7 @@ const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee}) => {
        } catch (error) {
           await Toast.fire({
             title: `Error Creating Employee ${error}`,
-            icon: 'success',
+            icon: 'error',
             timer: 1500,
             position: "top"
           })          
@@ -71,28 +71,26 @@ const ModalAddEmployee = ({showModalAddEmployee, setshowModalAddEmployee}) => {
           </Modal.Header>
     
           <Modal.Body>
-
-                <FormGroup>
-                    <Label>First Name</Label>
-                    <Input type='text' name='firstName' onChange={(e) => updateData(e)} value = {employee.firstName} placeholder="Enter First Name"/>
-                </FormGroup>
-                <FormGroup>
-                    <Label>Last Name</Label>
-                    <Input type='text' name = 'lastName' onChange={(e) => updateData(e)} value = {employee.lastName} placeholder="Enter Last Name"/>
-                </FormGroup>
-                <FormGroup>
-                    <Label >Email</Label>
-                    <Input type='email' name = 'email' onChange={(e) => updateData(e)} value = {employee.email} placeholder="Enter a Valid Email"/>
-                </FormGroup>                
-                <FormGroup>
-                    <Label>Date of Joining</Label>
-                    <Input type='date' name = 'doj' onChange={(e) => updateData(e)} value = {employee.doj}/>
-                </FormGroup>
-                <FormGroup>
-                    <Label>Designation</Label>
-                    <Input type='text' name = 'designation' onChange={(e) => updateData(e)} value = {employee.designation} placeholder="Enter a Designation, Ej: Developer..."/>
-                </FormGroup>
-
+            <FormGroup>
+                <Label>First Name</Label>
+                <Input type='text' name='firstName' onChange={(e) => updateData(e)} value = {employee.firstName} placeholder="Enter First Name"/>
+            </FormGroup>
+            <FormGroup>
+                <Label>Last Name</Label>
+                <Input type='text' name = 'lastName' onChange={(e) => updateData(e)} value = {employee.lastName} placeholder="Enter Last Name"/>
+            </FormGroup>
+            <FormGroup>
+                <Label >Email</Label>
+                <Input type='email' name = 'email' onChange={(e) => updateData(e)} value = {employee.email} placeholder="Enter a Valid Email"/>
+            </FormGroup>                
+            <FormGroup>
+                <Label>Date of Joining</Label>
+                <Input type='date' name = 'doj' onChange={(e) => updateData(e)} value = {employee.doj}/>
+            </FormGroup>
+            <FormGroup>
+                <Label>Designation</Label>
+                <Input type='text' name = 'designation' onChange={(e) => updateData(e)} value = {employee.designation} placeholder="Enter a Designation, Ej: Developer..."/>
+            </FormGroup>
           </Modal.Body>
     
           <Modal.Footer>

@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import './ManageEmployeePage.scss';
-import  { GetAllEmployees,DeleteEmployee, GetAllSkills, GetAllExpertiseLevel, GetSkillsByEmployeeId }  from '../../httpService.js';
 import { Container, Row} from 'reactstrap';
 import { Button, FormGroup, Input} from 'reactstrap';
 import ModalEmployeeSkills from '../Modals/ModalEmployeeSkills.jsx';
@@ -9,7 +8,9 @@ import ModalAssignSkill from '../Modals/ModalAssignSkill.jsx';
 import ModalEditEmployee from '../Modals/ModalEditEmployee.jsx';
 import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import Table from 'react-bootstrap/Table';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { deleteEmployeeRedux, resetDeleteState } from '../../features/employees/employeesSlice'
+import { deleteSkillsOfEmployeesByEmployeeId } from '../../features/skillsofEmployees/skillsofEmployeesSlice'
 import { motion } from "framer-motion"
 import Swal from 'sweetalert2'
 const ManageEmployeesPage = () => {
@@ -19,9 +20,6 @@ const ManageEmployeesPage = () => {
     showConfirmButton: false,
     timerProgressBar: true,
   })
-  //UseState to handle skills and expertises
-  const [ skills, setSkills ] = useState( [] )
-  const [ expertises, setExpertises ] = useState( [] )
 
   //UseSetates to handle the Modals
   const [showModalskills, setShowModalskills] = useState(false)
@@ -30,38 +28,30 @@ const ManageEmployeesPage = () => {
   const [showModalAddskills, setshowModalAddskills] = useState(false)
 
   const [skillsbyemployee, setskillsbyemployee] = useState([])
-  const [ employees, setEmployees ] = useState( [] )
+  //const [ employees, setEmployees ] = useState( [] )
   const [employeeWithskill, setEmployee] = useState([])
-  // The state from Redux
-  const { isSuccess } = useSelector((state) => state.auth)
-  const token = JSON.parse(localStorage.getItem('token'))
+    ///////////////////  REDUX TOOLKIT //////////////////////////
+  const { isSuccess} = useSelector((state) => state.auth)
+  const employeesState  = useSelector((state) => state.employeesState)
+  const  {employees}  = employeesState;
+  const dispatch = useDispatch()
+  const skillssState  = useSelector((state) => state.skillsState)
+  const  {skills}  = skillssState;
+  const levelsState  = useSelector((state) => state.levelsState)
+  const  {levels}  = levelsState;  
 
+  const skillEmployeesStatus = useSelector((state) => state.skillsOfEmployeesState)
+  const {skillsOfEmployees} = skillEmployeesStatus 
+
+  const token = JSON.parse(localStorage.getItem('token'))
   useEffect ( () => {
     if (isSuccess){
-      getAllEmployees(token)
-      getAllSkills(token)
-      getAllExpertiseLevel(token)
+ 
     }
-  }, [])
-
-  const getAllEmployees = async (token) => {
-    const response = await GetAllEmployees(token);
-    setEmployees(response);
-    console.log(response);
-  }
-  const getAllSkills = async (token) => {
-    const response = await GetAllSkills(token)
-    setSkills(response);
-    
-  }
-  const getAllExpertiseLevel = async (token) => {
-    const response = await GetAllExpertiseLevel(token)
-    setExpertises(response)
-  }
+  }, [isSuccess, token])
 
   const deleteEmployee = async (employee, token) => {
-   
-    // let res = false;
+
     await Swal.fire({
       text: `Are you sure you want to delete the employee:  ${employee.firstName + " "+employee.lastName}?`,
       icon: 'question',
@@ -71,40 +61,38 @@ const ManageEmployeesPage = () => {
       position: "top"
     }).then(async res => {
       if (res.isConfirmed){
-        const response = await DeleteEmployee(employee.id, token);
-        if (response.status === 200){
+        try {
+          await dispatch(deleteEmployeeRedux(employee.id)).unwrap()
+          dispatch(resetDeleteState())
+          dispatch(deleteSkillsOfEmployeesByEmployeeId(employee.id))
           await Toast.fire({
-            title: `Employee ${employee.firstName + " "+employee.lastName}`,
+            title: `Employee ${employee.firstName + " "+employee.lastName} deleted`,
             icon: 'success',
             timer: 1500,
             position: "top"
           })
-          let data = employees.filter(data => data.id !== employee.id)
-          console.log(data)
-          setEmployees(data)
-        }
+        } catch(error) {
+          await Toast.fire({
+            title: `Error deleting employee ${error}`,
+            icon: 'error',
+            timer: 1500,
+            position: "top"
+          })
+        }       
       }
     })
 
-}
-
-
-
-  const getSkillsByEmployeeId = async (employeedata, token) => {
-    const response = await GetSkillsByEmployeeId(employeedata, token);
-    return(response);
-  }
+  } 
 
     //Functions to launchModals show skills
   const sendDataEmployee = async (employeedata, token) => {
-    const response =  await getSkillsByEmployeeId(employeedata, token);
-    console.log(response)
-    if (response != null)
-    { 
-      setskillsbyemployee(response)
-    } else {
+    const filterSkillsOfEmployees = skillsOfEmployees.filter((skillemployee) => skillemployee.employeeId === employeedata.id)
+    if (filterSkillsOfEmployees.length === 0){
       setskillsbyemployee([])
+    } else {
+      setskillsbyemployee(filterSkillsOfEmployees)
     }
+    setskillsbyemployee(filterSkillsOfEmployees)
     setEmployee(employeedata)
     setShowModalskills(true)
   }
@@ -112,7 +100,6 @@ const ManageEmployeesPage = () => {
   //Function to launch Add employee modal
   const geDataToLaunchModal = () => {
     setshowModalAddEmployee(true)
-    console.log('result');
   }
 
   //Function to launch Addskills modal
@@ -124,7 +111,7 @@ const ManageEmployeesPage = () => {
   //Function to launch edit Employee Modal
   const getDataTolaunchModalEditEmployee = (employeeData) => {
     setshowModalEditEmployee(true)
-    employeeData.doj = employeeData.doj.slice(0, 10);
+    //employeeData.doj = employeeData.doj.slice(0, 10);
     setEmployee(employeeData)
   }
 
@@ -139,14 +126,14 @@ const ManageEmployeesPage = () => {
       <Container>
       <Row>
         <FormGroup>
-          <Input className='AddEmployee' type="select" id="exampleSelect" onClick={ () => geDataToLaunchModal() }>
+          <Input className='AddEmployee' type="select" id="exampleSelect" onClick={ () => geDataToLaunchModal()}>
             <option>Click to Add Employee</option>
           </Input>
         </FormGroup>
       </Row>
       <Row>
         <FormGroup>
-          <Table className='table table-striped' bordered size="sm">
+          <Table responsive className='table table-striped' bordered='true' size="sm" hover='true' >
             <thead className='text-dark'>
               <tr>
                 <th> # </th>
@@ -168,10 +155,10 @@ const ManageEmployeesPage = () => {
                   <td>
 
                       {/* Pass Employee to modal */}
-                    <Button color="info" size="sm" onClick={ () => sendDataEmployee(employee, token) }>View Skills</Button> {' '}
-                    <Button color="warning" size="sm" onClick={ () => getDataToLaunchAddSkillModal(employee)}>Assign Skills</Button> {' '}
-                    <Button color="success" size="sm" onClick={ () => getDataTolaunchModalEditEmployee(employee)}>Edit</Button>{' '}
-                    <Button color="danger" size="sm" onClick={ () => deleteEmployee(employee, token) }>Delete</Button>
+                    <Button className='buttons' color="info" size="sm" onClick={ () => sendDataEmployee(employee, token) }>View Skills</Button> {' '}
+                    <Button className='buttons' color="warning" size="sm" onClick={ () => getDataToLaunchAddSkillModal(employee)} >Assign Skills</Button> {' '}
+                    <Button className='buttons' color="success" size="sm" onClick={ () => getDataTolaunchModalEditEmployee(employee)} >Edit</Button>{' '}
+                    <Button className='buttons' color="danger" size="sm" onClick={ () => deleteEmployee(employee, token) } >Delete</Button>
                   </td>
                 </tr>
               )) }
@@ -179,6 +166,18 @@ const ManageEmployeesPage = () => {
           </Table>
         </FormGroup>
       </Row>
+      {showModalAddskills ? (
+        <ModalAssignSkill
+          employee = {employeeWithskill}
+          showModalAddskills = {showModalAddskills}
+          setshowModalAddskills = { setshowModalAddskills }
+          expertises = {levels}      
+          skills = {skills}
+        /> 
+      ) : (
+        <></>
+      )}
+
       <ModalEmployeeSkills 
           showModal = {showModalskills} 
           setShowModal = {setShowModalskills}
@@ -189,20 +188,14 @@ const ManageEmployeesPage = () => {
       <ModalAddEmployee
         showModalAddEmployee = {showModalAddEmployee}
         setshowModalAddEmployee = {setshowModalAddEmployee}
-        getAllEmployees = {getAllEmployees}
+        // getAllEmployees = {getAllEmployees}
        /> 
-       <ModalAssignSkill
-          employee = {employeeWithskill}
-          showModalAddskills = {showModalAddskills}
-          setshowModalAddskills = { setshowModalAddskills }
-          expertises = {expertises}      
-          skills = {skills}
-       />  
+ 
        <ModalEditEmployee
        showModalEditEmployee = {showModalEditEmployee}
        setshowModalEditEmployee = {setshowModalEditEmployee}
        employeeWithSkills	 = {employeeWithskill}
-       getAllEmployees = {getAllEmployees}
+      //  getAllEmployees = {getAllEmployees}
        />
        
     </Container>

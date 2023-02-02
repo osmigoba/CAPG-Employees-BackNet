@@ -1,7 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 import { Login } from '../../httpService'
 import Swal from 'sweetalert2'
-import CapLogo from '../../Capgemini-logo.jpg'
 //Get user from LocalStorage
 const user = JSON.parse(localStorage.getItem('user'))
 
@@ -10,7 +9,9 @@ const initialState = {
     isError: false,
     isSuccess: user ? true : false,
     isLoading: false,
-    message: ''
+    message: '',
+    name: 'User',
+    admin: false
 }
 const Toast = Swal.mixin({
     toast: true,
@@ -25,7 +26,7 @@ export const login = createAsyncThunk('auth/login', async(user, ThunkAPI) => {
           await Toast.fire({
             icon: 'success',
             title: '😎 Login successful',
-            timer: 1500
+            timer: 800
           })
         return data
     } catch (error) {
@@ -53,6 +54,8 @@ export const authSlice = createSlice({
             state.message = ''
             state.isSuccess = false
             state.user = null
+            state.name = 'User'
+            state.admin = false
           },        
     },
     extraReducers: (builder) => {
@@ -63,14 +66,16 @@ export const authSlice = createSlice({
 
             .addCase(login.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.error = false
+                state.isError = false
                 state.isSuccess = true
                 state.user = action.payload
+                state.name = action.payload.email
+                state.admin = action.payload.admin
             })
 
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false
-                state.error = true
+                state.isError = true
                 state.message = action.payload
                 state.user = null
                 state.isSuccess = false

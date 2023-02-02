@@ -10,24 +10,24 @@ const ModalSearchEmployeesByExpertise = ({showModal, setShowModal, employees}) =
       
   return (
     <Modal show={showModal} onHide={closeModal}>
-      <Modal.Header closeButton><b>{employees.length} Registers Found with the Expertise </b></Modal.Header>
+      <Modal.Header closeButton><b>{employees.length} Registers Found with the Expertise {employees[0].levelName}</b></Modal.Header>
         <Modal.Body>
-        <Table className='table table-striped' bordered size="sm">
+        <Table className='table table-striped' bordered='true' size="sm" hover='true'>
                   <thead className='text-dark'>
                     <tr>
                       <th> # </th>
                       <th>Name</th>                      
+                      <th> Designation</th>
                       <th> Skill</th>
-                      <th> Level</th>
                     </tr>
                   </thead>
                   <tbody>
-                    { employees && employees.map( (employee) =>(
-                        <tr key={employee.key}>
+                    { employees && employees.map( (employee, index) =>(
+                        <tr key={ index }>
                           <td> {employee.id}</td>
                           <td> {employee.firstName + " "+employee.lastName} </td>
+                          <td> {employee.designation}</td>
                           <td> {employee.skill}</td>
-                          <td> {employee.levelName}</td>
                         </tr>
                     )) }
                   </tbody>

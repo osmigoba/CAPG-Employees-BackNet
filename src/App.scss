@@ -12,24 +12,39 @@ body {
 $light: #ffffff;
 $gray: #e7e9eb;
 
-.flex {
-  display: flex;
-}
+
 
 .navbar {
   background-color: $light;
-  padding: 1rem 2rem;
+  // padding: 1rem 2rem;
   border-bottom: 2px solid $gray
 }
-
+.containerMain {
+  padding-left: 0;
+  padding-right: 0;
+}
+.mainRow {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.mainCols {
+  padding-left: 0;
+  padding-right: 0;
+}
 
 .sidebar {
-  // width: calc(30vh - 10px);
-  width: 15rem;
-  resize: both;
+  // // width: calc(30vh - 10px);
+  // width: 15rem;
+  // resize: both;
   height: 100vh;
+  max-height: 100%;
+  // padding-left: 0%;
+  // padding-right: 0%;
   border-right: 3px solid $gray;
-  background-color: white;
+  border-left: 3px solid $gray;
+  background-color: $light;
   
   ul {
     list-style: none;
@@ -52,4 +67,9 @@ $gray: #e7e9eb;
 .brand-image {
   margin-bottom: 13px; 
   padding:  0rem;
+}
+@media only screen and (max-width: 576px) {
+  .sidebar {
+    height: auto;
+  }
 }

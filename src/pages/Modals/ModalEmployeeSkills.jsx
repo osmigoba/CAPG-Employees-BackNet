@@ -1,16 +1,16 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import  { DeleteEmployeeSkill}  from '../../httpService.js';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch  } from 'react-redux'
+import { deleteSkillOfEmployee, resetDeleteSkillOfEmployeeState } from '../../features/skillsofEmployees/skillsofEmployeesSlice'
 import Swal from 'sweetalert2'
-const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsToshow,employee}) => {
-
+const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsToshow, employee}) => {
   const { token } = useSelector((state) => state.auth.user)
+  const dispatch = useDispatch()
   const closeModal = () => {
     setShowModal(false)
-  }
+  } 
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -26,20 +26,26 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
       showCloseButton: true
     }).then(async res => {
       if (res.isConfirmed){
-        const response = await DeleteEmployeeSkill(item.skillID, employee.id, token);
-        if (response.status !== 200){
-          window.confirm("There was a problem deleting this skill")
-          return;
-        }
-        await Toast.fire({
-          title: `The skill ${item.skill} has been deleted`,
-          icon: 'success',
-          timer: 1500,
-          position: "top"
-        })
-        let skills = [...skillstoShow]
-        skills = skills.filter(skill => skill.skillID !== item.skillID)
-        setSkillsToshow(skills)          
+        try {
+          await dispatch(deleteSkillOfEmployee(item)).unwrap()
+          dispatch(resetDeleteSkillOfEmployeeState())
+
+          await Toast.fire({
+            title: `Skill of the employee deleted`,
+            icon: 'success',
+            timer: 1000,
+            position: "top"
+          })
+          const newskills = skillstoShow.filter((skillemployee) => skillemployee.skillID !== item.skillID)
+          setSkillsToshow(newskills)
+        } catch(error) {
+          await Toast.fire({
+            title: `Error Deleting skill ${error}`,
+            icon: 'error',
+            timer: 1500,
+            position: "top"
+          }) 
+        }        
       }
     })
   }
@@ -47,9 +53,9 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
   return (
     
     <Modal show={showModal} onHide={closeModal}>
-      <Modal.Header closeButton><b>View Skills</b></Modal.Header>
+      <Modal.Header closeButton><b>View Skills of {employee.firstName} {employee.lastName} </b></Modal.Header>
         <Modal.Body>
-          <Table className='table table-striped' bordered>
+          <Table className='table table-striped' bordered='true' hover='true'>
             <thead className='text-dark'>
               <tr>
                 <th>#</th>
@@ -61,9 +67,9 @@ const ModalEmployeeSkills = ({showModal, setShowModal, skillstoShow, setSkillsTo
              </thead>
              <tbody>
                 { skillstoShow.map( (item, index) =>(
-                    <tr key={item.skillId}>
+                    <tr key={index}>
                       <td>
-                        <Button variant="danger" size="sm" onClick={() => onHandleRemove(item, token)}>Remove</Button> 
+                        <Button variant="danger" size="sm" onClick={() => onHandleRemove(item, token)} >Remove</Button> 
                       </td>
                       <td> {item.skill} </td>
                       <td> {item.level} </td>

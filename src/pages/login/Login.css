@@ -1,13 +1,23 @@
 
-.Login {
+ .Login {
   border-radius: 8px;
-  margin-top: 5%;
-  margin-left: 20%;
+  /* margin-top: 5%;
+  margin-left: 20%; */
 
   height: 30hv;
   font-weight: bold;
   border:2px solid rgb(214, 209, 209);
   width: 25rem;
+} 
+.firstDiv {
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  /* min-height: 100vh; */
+  position: relative;
+  margin-top: 5rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .paddingButton {
@@ -30,6 +40,7 @@
   padding-top: 3%;
 }
 
+
 .Title {
   padding-left: 5%;
   padding-top: 2%;
@@ -46,4 +57,27 @@
 
 .PasswordLabel {
   padding-top: 3%;
+}
+
+.overlay {
+  position: relative;
+  z-index: 1002;
+  background-color: #faf6f612;
+  min-width: 100%;
+  height: 900px;
+}
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  margin-top: 230px;
+}
+
+.spinner-message {
+  text-align: center;
+}
+
+.spiner-imagenLoader {
+    align-items: center;
 }

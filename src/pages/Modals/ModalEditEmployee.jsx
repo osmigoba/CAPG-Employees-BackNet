@@ -2,9 +2,10 @@ import React, { useState, useEffect} from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FormGroup, Label, Input } from 'reactstrap';
-import  { EditEmployee }  from '../../httpService.js';
 import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import Swal from 'sweetalert2'
+import { updateEmployeeRedux, resetUpdateState } from '../../features/employees/employeesSlice'
 const modelEmployee = {
     id: 0,
     firstName: "",
@@ -15,7 +16,7 @@ const modelEmployee = {
 }
 
 
-const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, employeeWithSkills, getAllEmployees}) => {
+const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, employeeWithSkills}) => {
   const { token } = useSelector((state) => state.auth.user)
   const Toast = Swal.mixin({
     toast: true,
@@ -24,6 +25,8 @@ const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, emp
     timerProgressBar: true,
   })
   const [employee, setEmployee] =  useState(modelEmployee);
+  ///////////////////  REDUX TOOLKIT //////////////////////////
+  const dispatch = useDispatch()
   useEffect ( () => {
     if (employeeWithSkills.length !== 0){
 
@@ -32,34 +35,40 @@ const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, emp
 
   }, [employeeWithSkills])
 
-
-    
-
     const updateData = (e) => {
-        console.log(e.target.name + " : " + e.target.value)
+      if (e.target.name === 'doj') {
+        setEmployee({
+          ...employee,
+          [e.target.name]: e.target.value + "T00:00:00-05:00"
+        })  
+        return        
+      }
         setEmployee({
           ...employee,
           [e.target.name]: e.target.value
         })
-        console.log(employee)
-        console.log(employeeWithSkills)
     }
     
     const editEmployee = async (employee, token) => {
-        console.log('click')
-        const response = await EditEmployee(employee, token)
-        if (response.status === 200){
+        try {
+          await dispatch(updateEmployeeRedux(employee)).unwrap()
           await Toast.fire({
-            title: `The Employee # ${employee.id} has been modified`,
+            title: `Employee ${employee.firstName} ${employee.lastName} Updated`,
             icon: 'success',
             timer: 1500,
             position: "top"
-          })
-          getAllEmployees(token)
-          handleClose();  
-        }
-
-        console.log(employee)
+          }) 
+          dispatch(resetUpdateState())
+          setEmployee([]);
+          handleClose();
+       } catch (error) {
+          await Toast.fire({
+            title: `Error Updating the Employee ${error}`,
+            icon: 'error',
+            timer: 1500,
+            position: "top"
+          })          
+       }        
     }
 
     const handleClose = () => {setshowModalEditEmployee(false);}
@@ -69,7 +78,7 @@ const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, emp
           onHide={handleClose}
           >
           <Modal.Header closeButton>
-            <Modal.Title>Edit Employee</Modal.Title>
+            <Modal.Title>Edit Employee {employeeWithSkills && employeeWithSkills.firstName} {employeeWithSkills && employeeWithSkills.lastName}</Modal.Title>
           </Modal.Header>
     
           <Modal.Body>
@@ -88,7 +97,7 @@ const ModalEditEmployee = ({showModalEditEmployee, setshowModalEditEmployee, emp
                 </FormGroup>                
                 <FormGroup>
                     <Label>Date of Joining</Label>
-                    <Input type='date' name = 'doj' onChange={(e) => updateData(e)} defaultValue = {employeeWithSkills && employeeWithSkills.doj}/>
+                    <Input type='date' name = 'doj' onChange={(e) => updateData(e)} defaultValue = {employeeWithSkills.doj && employeeWithSkills.doj.slice(0, 10)}/>
                 </FormGroup>
                 <FormGroup>
                     <Label>Designation</Label>

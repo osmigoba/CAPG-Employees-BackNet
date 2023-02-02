@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import  './ManageSkillPage.scss'
-import  { GetAllSkills, AddSkill, DeleteSkill}  from '../../httpService.js';
 import { Container, Row, Col } from 'reactstrap';
 import { Button, FormGroup, Label, Input} from 'reactstrap';
 import { Table } from 'reactstrap';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import UnAuthorized from '../unAuthorized/unAuthorizedComponent.jsx'
 import { motion } from "framer-motion"
 import Swal from 'sweetalert2'
+import { deleteSkillRedux, addSkillRedux } from '../../features/skills/skillsSlice'
+import { deleteSkillsOfEmployeesBySkillId } from '../../features/skillsofEmployees/skillsofEmployeesSlice'
 const skillObject = {
   skill: ""
 }
@@ -21,27 +22,22 @@ const ManageSkillsPage = () => {
   })
 
   const [skillData, setSkill] = useState(skillObject)
-  const [ skills, setSkills ] = useState( [] )
+
   // The state from Redux
+  const dispatch = useDispatch()
   const { isSuccess } = useSelector((state) => state.auth)
   const token = JSON.parse(localStorage.getItem('token'))
+  const skillssState  = useSelector((state) => state.skillsState)
+  const  {skills}  = skillssState;
 
+  const skillEmployeesStatus = useSelector((state) => state.skillsOfEmployeesState)
+  const {skillsOfEmployees} = skillEmployeesStatus 
   useEffect ( () => {
 
-    if (isSuccess){
-      getAllSkills(token);
-    }
-    
   }, [])
   
-  const getAllSkills = async (token) => {
-    const response = await GetAllSkills(token)
-    setSkills(response)
-    return response
-  }
 
   const updateData = (e) => {
-    console.log(e.target.name + " : " + e.target.value)
     setSkill({
       ...skillData,
       [e.target.name]: e.target.value
@@ -77,9 +73,8 @@ const ManageSkillsPage = () => {
       })
       return;
     }
-
-    const response = await AddSkill(skillData.skill.toUpperCase(), token)
-    if (response.status === 201){
+    try {
+      await dispatch(addSkillRedux(skillData)).unwrap()
       await Toast.fire({
         title: `The skill ${skillData.skill.toUpperCase()} has been added to the catalogue`,
         icon: 'success',
@@ -88,16 +83,29 @@ const ManageSkillsPage = () => {
         timer: 1500,
         position: "top"
       })
-
-      setSkill(skillObject);
-      getAllSkills(token);
+      setSkill(skillObject)
+      
+    } catch (error){
+      await Toast.fire({
+        title: `Error Adding skill ${error}`,
+        icon: 'error',
+        timer: 1500,
+        position: "top"
+      })     
     }
+
   }
 
-const onHandleDelete = async (item, token) => {
-
+const onHandleDelete = async (skillToDelete, token) => {
+  const listSkills = skillsOfEmployees.filter(skill => skill.skillID === skillToDelete.id)
+  let textToShow;
+  if (listSkills.length > 0){
+    textToShow = `This skill ${skillToDelete.skill} has been assigned to ${listSkills.length} ${listSkills.length === 1 ? 'employee': 'employees'}, Do you want to delete it?`;
+  } else {
+    textToShow = `Are you sure you want to delete the Skill:  ${skillToDelete.skill}?`;
+  }
   await Swal.fire({
-    text: `Are you sure you want to delete the Skill:  ${item.skill}?`,
+    text: textToShow,
     icon: 'question',
     confirmButtonColor: "#F44336",
     showCancelButton: true,
@@ -105,24 +113,28 @@ const onHandleDelete = async (item, token) => {
     position:"top",
   }).then(async response  => {
     if (response.isConfirmed){
-      const response = await DeleteSkill(item.id, token);
-      console.log(response)
-      if (response.status === 200){
-        getAllSkills(token);
-        await Toast.fire ({
-          text: `skill ${item.skill} deleted from Catalogue`,
+      try {
+        await dispatch(deleteSkillRedux(skillToDelete.id)).unwrap()
+        dispatch(deleteSkillsOfEmployeesBySkillId(skillToDelete.id))
+        await Toast.fire({
+          title: `Skill ${skillToDelete.skill} deleted`,
           icon: 'success',
-          confirmButtonColor: "#F44336",
-          showCloseButton: true,
-          position:"top",
-          timer: 1500
+          timer: 1500,
+          position: "top"
         })
-      }
+      } catch(error) {
+        console.log("Error catch: ",error)
+        await Toast.fire({
+          title: `Error deleting skill ${error}`,
+          icon: 'error',
+          timer: 1500,
+          position: "top"
+        })
+      } 
     }
   })
 
 }
-
   return (
     <motion.div
         initial={{opacity: 0, x: 100 }}
@@ -148,8 +160,8 @@ const onHandleDelete = async (item, token) => {
         <Row>
         <div>
         <FormGroup>
-              <Table className='table table-striped' bordered size="sm">
-                <thead className='text-dark' bordered>
+              <Table className='table table-striped' bordered={true} size="sm" hover='true'>
+                <thead className='text-dark' bordered='true'>
                   <tr>
                     <th> # </th>
                     <th>Skills</th>
